@@ -2328,7 +2328,7 @@ public class UserInterface extends JFrame implements ChartMouseListener{
 			antennaArray.createPattern();
 			
 			for(int x=0; x<antennaArray.angle.length; x++)
-			{				
+			{
 				seriler.addOrUpdate(antennaArray.angle[x], antennaArray.pattern_dB[x]);
 			}
 			
