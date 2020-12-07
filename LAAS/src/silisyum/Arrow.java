@@ -103,7 +103,7 @@ public class Arrow {
 			}
 
 			// Okun bitisi. Burasi oncekinden okunUzunlugu kadar uzak olmali
-			// Yonu belirlemek gerekiyor
+			// Yonu belirlemek gerekiyor. Birim vektorle yapabilecegiz galiba.
 			for (int d = 0; d < problemDimension; d++) {
 				members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
 				temp[d] = members[d][m];
