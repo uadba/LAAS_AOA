@@ -275,7 +275,7 @@ public class UserInterface extends JFrame implements ChartMouseListener{
 			H[limit] = DefaultConfiguration.H[limit];			
 		}
 		
-		setTitle("Linear Antenna Array Synthesizer");		
+		setTitle("BURASI BAŞLIK Linear Antenna Array Synthesizer");		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1429, 991);
 		contentPane = new JPanel();
