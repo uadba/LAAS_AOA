@@ -120,7 +120,12 @@ public class UserInterface extends JFrame implements ChartMouseListener{
     private double Cr = DefaultConfiguration.Cr;
     private AntennaArray antennaArray;
     private AntennaArray antennaArrayForPresentation;
-    private DifferentialEvolution differentialEvolution;
+    
+    // Yeni algoritmalar buraya eklenebilir -------------
+    //private DifferentialEvolution algoritma;
+    private Arrow algoritma;
+    //---------------------------------------------------
+    
     private BestValues bestValues;
     private JTabbedPane tabbedPaneForSettings;
     private JPanel arrayParametersPanel;
@@ -2305,8 +2310,10 @@ public class UserInterface extends JFrame implements ChartMouseListener{
 		if (positionIsUsed) problemDimension += numberOfElements;
 	}
 	
-	private void createMainObjects() {		
-		differentialEvolution = new DifferentialEvolution(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, L, H, antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed, positionIsUsed);
+	private void createMainObjects() {
+		
+		//algoritma = new DifferentialEvolution(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, L, H, antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed, positionIsUsed);
+		algoritma = new Arrow(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, L, H, antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed, positionIsUsed);
 	}
 	
 	private void preserveAspectRatio(JPanel innerPanel, JPanel container) {
@@ -2436,15 +2443,15 @@ public class UserInterface extends JFrame implements ChartMouseListener{
 	}
 	
 	protected void drawPlotOfConvergence() {
-		int currentIterationIndex = differentialEvolution.iterationIndex;
+		int currentIterationIndex = algoritma.iterationIndex;
 		int index = 0;
 		for(index = unplottedIterationIndexBeginning; index < currentIterationIndex; index++) {
-			convergenceSeries.add(index, differentialEvolution.costValues[index]);
+			convergenceSeries.add(index, algoritma.costValues[index]);
 		}
 		unplottedIterationIndexBeginning = index;		
 		
-		iterationText.setText(Integer.toString(differentialEvolution.iterationIndex - 1)); // we remove one from iterationIndex because this number was increased by algorithm but it does not match the current fitnessOfBestMember 
-		costText.setText(Double.toString(differentialEvolution.fitnessOfBestMember));
+		iterationText.setText(Integer.toString(algoritma.iterationIndex - 1)); // we remove one from iterationIndex because this number was increased by algorithm but it does not match the current fitnessOfBestMember 
+		costText.setText(Double.toString(algoritma.fitnessOfBestMember));
 	}
 
 	private void drawOuterMask() {
@@ -2516,13 +2523,13 @@ public class UserInterface extends JFrame implements ChartMouseListener{
 			while(!isCancelled())
 			{
 				while (keepIterating && iterationHasNotCompletedYet) {
-					iterationHasNotCompletedYet = differentialEvolution.iterate();
+					iterationHasNotCompletedYet = algoritma.iterate();
 					double[] valuesOfBestMember = new double[problemDimension];
 					for (int d = 0; d < problemDimension; d++) {
-						valuesOfBestMember[d] = differentialEvolution.members[d][differentialEvolution.bestMember];
+						valuesOfBestMember[d] = algoritma.members[d][algoritma.bestMember];
 					}
 					if(iterationHasNotCompletedYet == false) firstOrLastPlot = true;
-					publish(new BestValues(differentialEvolution.bestMember, differentialEvolution.fitnessOfBestMember, valuesOfBestMember));
+					publish(new BestValues(algoritma.bestMember, algoritma.fitnessOfBestMember, valuesOfBestMember));
 				}
 			}			
 			return null;
@@ -2531,7 +2538,7 @@ public class UserInterface extends JFrame implements ChartMouseListener{
 		@Override
 		protected void process(List<BestValues> chunks) {
 			bestValues = chunks.get(chunks.size()-1);
-			int progress = (int) (100*differentialEvolution.iterationIndex / differentialEvolution.maximumIterationNumber);
+			int progress = (int) (100*algoritma.iterationIndex / algoritma.maximumIterationNumber);
 			progressBar.setValue(progress);
 			if(iterationHasNotCompletedYet == false)
 			{	
