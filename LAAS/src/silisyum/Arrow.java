@@ -167,27 +167,7 @@ public class Arrow {
 	
 	public boolean iterate() {
 		
-		Random r = new Random();
-		for (int m = 0; m < populationNumber; m++) {
-			if (m!=bestMember) {
-				for (int d = 0; d < problemDimension; d++) {
-					members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
-				}
-			}			
-		}
-		
-		for (int m = 0; m < populationNumber; m++) {
-			if (m!=bestMember) {
-				for (int d = 0; d < problemDimension; d++) {
-					temp[d] = members[d][m];
-				}
-				memberFitness[m] = cost.function(temp);
-				if (memberFitness[m] < fitnessOfBestMember) {
-					bestMember = m;
-					fitnessOfBestMember = memberFitness[m];
-				} 
-			}			
-		}
+		// Buraya iteratif algoritmayý yazacaksýn
 		
 		costValues[iterationIndex] = fitnessOfBestMember;
 		iterationIndex++;
