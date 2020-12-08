@@ -16,6 +16,7 @@ public class Arrow {
 	public int maximumIterationNumber;
 	private double F;
 	private double Cr;
+	private double okUzunluguOrani;
 	private int R1, R2, R3;
 	private Random r;
 	public int iterationIndex = 0;
@@ -30,13 +31,14 @@ public class Arrow {
 	private boolean iterationState = true;
 	public double[] costValues;
 	
-	public Arrow(int _numberofElements, int _populationNumber, int _maximumIterationNumber, double _F, double _Cr, double[] _L, double[] _H, AntennaArray _aA, AntennaArray _aAForP, Mask _mask, boolean _amplitudeIsUsed, boolean _phaseIsUsed, boolean _positionIsUsed) {
+	public Arrow(int _numberofElements, int _populationNumber, int _maximumIterationNumber, double _F, double _Cr, double _okUzunluguOrani, double[] _L, double[] _H, AntennaArray _aA, AntennaArray _aAForP, Mask _mask, boolean _amplitudeIsUsed, boolean _phaseIsUsed, boolean _positionIsUsed) {
 		
 		numberofElements = _numberofElements;
 		populationNumber = _populationNumber;
 		maximumIterationNumber = _maximumIterationNumber;
 		F = _F;
 		Cr = _Cr;
+		okUzunluguOrani = _okUzunluguOrani;
 		L = _L;
 		H = _H;
 	    amplitudeIsUsed = _amplitudeIsUsed;
@@ -69,7 +71,7 @@ public class Arrow {
 		if(amplitudeIsUsed) {
 			for (int e = 0; e < numberofElements; e++) {
 				Ls[e] = L[0];
-				Hs[e] = H[0];
+				Hs[e] = H[0];				
 			}
 			delta = numberofElements;
 		}
@@ -77,7 +79,7 @@ public class Arrow {
 		if (phaseIsUsed) {
 			for (int e = 0; e < numberofElements; e++) {
 				Ls[e + delta] = L[1];
-				Hs[e + delta] = H[1];
+				Hs[e + delta] = H[1];				
 			}
 			delta += numberofElements;
 		}		
@@ -120,18 +122,20 @@ public class Arrow {
 			hipotenus = Math.sqrt(hipotenus);
 			for (int d = 0; d < problemDimension; d++) {
 				birimVektor[d] = birimVektor[d]/hipotenus;
-			}
-			System.out.println("yukarisi birim asagisi esas");
-			double okUzunlugu = 7;
-			for (int d = 0; d < problemDimension; d++) {
-				bitisIcinDelta[d] = okUzunlugu*birimVektor[d];
 			}			
+			for (int d = 0; d < problemDimension; d++) {
+				double okUzunlugu = okUzunluguOrani*(Hs[d] - Ls[d]);
+				bitisIcinDelta[d] = okUzunlugu*birimVektor[d];
+			}
 			
 			for (int d = 0; d < problemDimension; d++) {
-				
-				members[d][m+1] = members[d][m] + bitisIcinDelta[d]; //Ls[d] + (Hs[d]-Ls[d])*r.nextDouble();
+				double yeniKonum = members[d][m] + bitisIcinDelta[d];
+				if(yeniKonum > Hs[d] || yeniKonum < Ls[d]) {
+					yeniKonum = members[d][m] - bitisIcinDelta[d];					
+				}
+				members[d][m+1] = yeniKonum;
 				temp[d] = members[d][m+1];
-			}			
+			}	
 			
 			memberFitness[m+1] = cost.function(temp);
 			if(bestMember == -1) {
@@ -144,7 +148,23 @@ public class Arrow {
 			}
 			
 			
+		}
+		
+		// TEST farký belirlemek için TEST///////////////////////		
+		double fark;
+		double ghipo;
+		for (int pm = 0; pm < populationNumber; pm += 2) {
+			ghipo=0;
+			for (int d = 0; d < problemDimension; d++) {
+				fark = members[d][pm] - members[d][pm+1];
+				double okUzunlugu = okUzunluguOrani*(Hs[d] - Ls[d]);
+				fark = fark/okUzunlugu;
+				ghipo += fark * fark;
+			}
+			ghipo = Math.sqrt(ghipo);
+			System.out.println(ghipo);
 		}		
+		// TEST --------------------- TEST///////////////////////
 	}
 	
 	public boolean iterate() {

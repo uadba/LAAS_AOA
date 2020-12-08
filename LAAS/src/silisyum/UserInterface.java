@@ -2313,7 +2313,8 @@ public class UserInterface extends JFrame implements ChartMouseListener{
 	private void createMainObjects() {
 		
 		//algoritma = new DifferentialEvolution(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, L, H, antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed, positionIsUsed);
-		algoritma = new Arrow(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, L, H, antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed, positionIsUsed);
+		double okUzunluguOrani = 0.02;
+		algoritma = new Arrow(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, okUzunluguOrani, L, H, antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed, positionIsUsed);
 	}
 	
 	private void preserveAspectRatio(JPanel innerPanel, JPanel container) {
