@@ -90,11 +90,13 @@ public class Arrow {
 		}		
 		
 		Random r = new Random();
-		for (int m = 0; m < populationNumber; m++) {
+		for (int m = 0; m < populationNumber; m+=2) {
+			// basllangiclarin atanmasi
 			for (int d = 0; d < problemDimension; d++) {
 				members[d][m] = Ls[d] + (Hs[d]-Ls[d])*r.nextDouble();
 				temp[d] = members[d][m];
 			}			
+			
 			memberFitness[m] = cost.function(temp);
 			if(bestMember == -1) {
 				bestMember = m;
@@ -104,6 +106,43 @@ public class Arrow {
 				bestMember = m;
 				fitnessOfBestMember = memberFitness[m];
 			}
+
+			// bitislerin atanmasi
+			// Oncelikle rasgele bir yon belirleme islemi gerceklestirilmeli
+			// Bunun için 1 ve -1 deðerleri arasýnda "d" adet rasgele deðer üretilmeli
+			double[] birimVektor = new double[problemDimension];
+			double[] bitisIcinDelta = new double[problemDimension];
+			double hipotenus = 0;
+			for (int d = 0; d < problemDimension; d++) {
+				birimVektor[d] = Math.random()*2-1;
+				hipotenus += birimVektor[d]*birimVektor[d];
+			}
+			hipotenus = Math.sqrt(hipotenus);
+			for (int d = 0; d < problemDimension; d++) {
+				birimVektor[d] = birimVektor[d]/hipotenus;
+			}
+			System.out.println("yukarisi birim asagisi esas");
+			double okUzunlugu = 7;
+			for (int d = 0; d < problemDimension; d++) {
+				bitisIcinDelta[d] = okUzunlugu*birimVektor[d];
+			}			
+			
+			for (int d = 0; d < problemDimension; d++) {
+				
+				members[d][m+1] = members[d][m] + bitisIcinDelta[d]; //Ls[d] + (Hs[d]-Ls[d])*r.nextDouble();
+				temp[d] = members[d][m+1];
+			}			
+			
+			memberFitness[m+1] = cost.function(temp);
+			if(bestMember == -1) {
+				bestMember = m+1;
+				fitnessOfBestMember = memberFitness[m+1];
+			}
+			else if(memberFitness[m+1] < bestMember) {
+				bestMember = m+1;
+				fitnessOfBestMember = memberFitness[m+1];
+			}
+			
 			
 		}		
 	}
