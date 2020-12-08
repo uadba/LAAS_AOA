@@ -102,9 +102,9 @@ public class Arrow {
 			memberFitness[m] = cost.function(temp);
 			if(bestMember == -1) {
 				bestMember = m;
-				fitnessOfBestMember = memberFitness[m];
+				fitnessOfBestMember = memberFitness[m];			
 			}
-			else if(memberFitness[m] < bestMember) {
+			else if(memberFitness[m] < fitnessOfBestMember) {
 				bestMember = m;
 				fitnessOfBestMember = memberFitness[m];
 			}
@@ -142,66 +142,51 @@ public class Arrow {
 				bestMember = m+1;
 				fitnessOfBestMember = memberFitness[m+1];
 			}
-			else if(memberFitness[m+1] < bestMember) {
+			else if(memberFitness[m+1] < fitnessOfBestMember) {
 				bestMember = m+1;
 				fitnessOfBestMember = memberFitness[m+1];
-			}
-			
-			
+			}			
 		}
 		
 		// TEST farký belirlemek için TEST///////////////////////		
-		double fark;
-		double ghipo;
-		for (int pm = 0; pm < populationNumber; pm += 2) {
-			ghipo=0;
-			for (int d = 0; d < problemDimension; d++) {
-				fark = members[d][pm] - members[d][pm+1];
-				double okUzunlugu = okUzunluguOrani*(Hs[d] - Ls[d]);
-				fark = fark/okUzunlugu;
-				ghipo += fark * fark;
-			}
-			ghipo = Math.sqrt(ghipo);
-			System.out.println(ghipo);
-		}		
+//		double fark;
+//		double ghipo;
+//		for (int pm = 0; pm < populationNumber; pm += 2) {
+//			ghipo=0;
+//			for (int d = 0; d < problemDimension; d++) {
+//				fark = members[d][pm] - members[d][pm+1];
+//				double okUzunlugu = okUzunluguOrani*(Hs[d] - Ls[d]);
+//				fark = fark/okUzunlugu;
+//				ghipo += fark * fark;
+//			}
+//			ghipo = Math.sqrt(ghipo);
+//			//System.out.println(ghipo);
+//		}		
 		// TEST --------------------- TEST///////////////////////
 	}
 	
 	public boolean iterate() {
 		
-		for (int individual = 0; individual < populationNumber; individual++) {
-			R1 = r.nextInt(populationNumber);
-			R2 = r.nextInt(populationNumber);
-			R3 = r.nextInt(populationNumber);
-			
-			int ri = r.nextInt(problemDimension);
-			
-			for (int d = 0; d < problemDimension; d++) {
-				if(r.nextDouble() < Cr || ri == d) {
-					Xtrial[d] = members[d][R3] + F * (members[d][R2] - members[d][R1]);
-				} else {
-					Xtrial[d] = members[d][individual];
-				}
-			}
-			
-			for (int d = 0; d < problemDimension; d++) {
-				if(Xtrial[d]<Ls[d] || Xtrial[d]>Hs[d])
-				{
-					Xtrial[d] = Ls[d] + (Hs[d]-Ls[d])*r.nextDouble();
-				}
-			}
-			
-			double fitnessOfTrial = cost.function(Xtrial);
-			if(fitnessOfTrial < memberFitness[individual]) {
+		Random r = new Random();
+		for (int m = 0; m < populationNumber; m++) {
+			if (m!=bestMember) {
 				for (int d = 0; d < problemDimension; d++) {
-					members[d][individual] = Xtrial[d];					
+					members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
 				}
-				memberFitness[individual] = fitnessOfTrial;				
-			}
-			if(fitnessOfTrial < memberFitness[bestMember]) {
-				bestMember = individual;
-				fitnessOfBestMember = memberFitness[individual];
-			}
+			}			
+		}
+		
+		for (int m = 0; m < populationNumber; m++) {
+			if (m!=bestMember) {
+				for (int d = 0; d < problemDimension; d++) {
+					temp[d] = members[d][m];
+				}
+				memberFitness[m] = cost.function(temp);
+				if (memberFitness[m] < fitnessOfBestMember) {
+					bestMember = m;
+					fitnessOfBestMember = memberFitness[m];
+				} 
+			}			
 		}
 		
 		costValues[iterationIndex] = fitnessOfBestMember;
