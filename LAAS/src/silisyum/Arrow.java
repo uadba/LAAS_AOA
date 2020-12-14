@@ -176,7 +176,7 @@ public class Arrow {
 					members[d][pm + 1] += members[d][pm + 1] - members[d][pm];
 					members[d][pm] = temp_mem;
 					temp1[d] = members[d][pm];
-					temp2[d] = members[d][pm];
+					temp2[d] = members[d][pm + 1];
 				}
 			} else {
 				for (int d = 0; d < problemDimension; d++) {
@@ -184,12 +184,22 @@ public class Arrow {
 					members[d][pm] += members[d][pm] - members[d][pm + 1];
 					members[d][pm + 1] = temp_mem;
 					temp1[d] = members[d][pm];
-					temp2[d] = members[d][pm];
+					temp2[d] = members[d][pm + 1];
 				}
 			}
+
+			memberFitness[pm] = cost.function(temp1);
+			if (memberFitness[pm] < fitnessOfBestMember) {
+				bestMember = pm;
+				fitnessOfBestMember = memberFitness[pm];
+			}
 			
-			
-			
+			memberFitness[pm+1] = cost.function(temp2);
+			if (memberFitness[pm+1] < fitnessOfBestMember) {
+				bestMember = pm+1;
+				fitnessOfBestMember = memberFitness[pm+1];
+			}
+
 		}
 
 		// _______________________________________
