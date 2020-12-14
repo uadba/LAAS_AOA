@@ -167,7 +167,8 @@ public class Arrow {
 	
 	public boolean iterate() {
 		
-		// Buraya iteratif algoritmayi yazacaksin
+		// Buraya iteratif algoritmayi yazacaksin.
+		
 		
 		costValues[iterationIndex] = fitnessOfBestMember;
 		iterationIndex++;
