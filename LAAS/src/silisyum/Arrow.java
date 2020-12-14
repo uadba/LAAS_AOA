@@ -9,16 +9,11 @@ public class Arrow {
 	private int populationNumber;
 	public double[][] members;
 	private double[] memberFitness;
-	private double[] Xtrial;
 	private double[] temp;
 	public int bestMember = -1;
 	public double fitnessOfBestMember = 0;
 	public int maximumIterationNumber;
-	private double F;
-	private double Cr;
 	private double okUzunluguOrani;
-	private int R1, R2, R3;
-	private Random r;
 	public int iterationIndex = 0;
 	private double[] L;
 	private double[] H;
@@ -36,8 +31,6 @@ public class Arrow {
 		numberofElements = _numberofElements;
 		populationNumber = _populationNumber;
 		maximumIterationNumber = _maximumIterationNumber;
-		F = _F;
-		Cr = _Cr;
 		okUzunluguOrani = _okUzunluguOrani;
 		L = _L;
 		H = _H;
@@ -50,7 +43,6 @@ public class Arrow {
 		if (positionIsUsed) problemDimension += numberofElements;
 		
 		cost = new Cost(numberofElements, _aA, _aAForP, _amplitudeIsUsed, _phaseIsUsed, positionIsUsed);
-		r = new Random();		
 		createArrays();
 		initialize();
 		costValues = new double[maximumIterationNumber];
@@ -59,7 +51,6 @@ public class Arrow {
 	private void createArrays() {
 		members = new double[problemDimension][populationNumber];
 		memberFitness = new double[populationNumber];
-		Xtrial = new double[problemDimension];
 		temp = new double[problemDimension];
 		Ls = new double[problemDimension];
 		Hs = new double[problemDimension];
@@ -168,6 +159,11 @@ public class Arrow {
 	public boolean iterate() {
 		
 		// Buraya iteratif algoritmayi yazacaksin.
+		// _______________________________________
+		
+		
+		
+		// _______________________________________
 		
 		
 		costValues[iterationIndex] = fitnessOfBestMember;
