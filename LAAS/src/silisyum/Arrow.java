@@ -63,7 +63,7 @@ public class Arrow {
 		temp = new double[problemDimension];
 		Ls = new double[problemDimension];
 		Hs = new double[problemDimension];
-		yon = new boolean[populationNumber/2];
+		yon = new boolean[populationNumber / 2];
 		r = new Random();
 		birimVektor = new double[problemDimension];
 		bitisIcinDelta = new double[problemDimension];
@@ -96,11 +96,14 @@ public class Arrow {
 		}
 
 		for (int m = 0; m < populationNumber; m += 2) {
-			
+
 			uyeleriDagit(m);
-			
+
 			// yonu belirle
-			if(memberFitness[m] > memberFitness[m+1]) yon[m/2] = true; else yon[m/2] = false;
+			if (memberFitness[m] > memberFitness[m + 1])
+				yon[m / 2] = true;
+			else
+				yon[m / 2] = false;
 		}
 
 		// TEST farký belirlemek için TEST///////////////////////
@@ -171,7 +174,7 @@ public class Arrow {
 			bestMember = m + 1;
 			fitnessOfBestMember = memberFitness[m + 1];
 		}
-		
+
 	}
 
 	public boolean iterate() {
@@ -180,11 +183,13 @@ public class Arrow {
 		// _______________________________________
 		double temp_mem, test_mem;
 		for (int pm = 0; pm < populationNumber; pm += 2) {
-			
-			if(memberFitness[pm] > memberFitness[pm+1] && yon[pm/2] != true) // yon degismis tekrar dagit
-			{
-				uyeleriDagit(pm);
-			}						
+
+			if (pm != bestMember || (pm+1) != bestMember) { // en iyi uye degilse dagit.
+				if (memberFitness[pm] > memberFitness[pm + 1] && yon[pm / 2] != true) // yon degismis tekrar dagit
+				{
+					uyeleriDagit(pm);
+				} 
+			}
 			
 			if (memberFitness[pm + 1] < memberFitness[pm]) { // eger sonraki adim daha iyi ise ileriye dogru gitmeye
 																// devam et.
@@ -203,8 +208,6 @@ public class Arrow {
 				memberFitness[pm + 1] = cost.function(temp);
 
 				// Alternative path with a deviation. ***************************
-
-				
 
 				// **************************************************************
 
