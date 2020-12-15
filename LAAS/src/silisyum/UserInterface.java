@@ -2420,7 +2420,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 		// maximumIterationNumber, F, Cr, L, H, antennaArray,
 		// antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed,
 		// positionIsUsed);
-		double okUzunluguOrani = 0.02;
+		double okUzunluguOrani = 0.5;
 		algoritma = new Arrow(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, okUzunluguOrani, L, H,
 				antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed, positionIsUsed);
 	}

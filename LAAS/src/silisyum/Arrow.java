@@ -182,47 +182,17 @@ public class Arrow {
 
 				memberFitness[pm] = memberFitness[pm + 1];
 				memberFitness[pm + 1] = cost.function(temp);
-				
+
 				// Alternative path with a deviation. ***************************
-				
-				double hipotenus = 0;
-				for (int d = 0; d < problemDimension; d++) {
-					birimVektor[d] = Math.random() * 2 - 1;
-					hipotenus += birimVektor[d] * birimVektor[d];
-				}
-				hipotenus = Math.sqrt(hipotenus);
-				for (int d = 0; d < problemDimension; d++) {
-					birimVektor[d] = birimVektor[d] / hipotenus;
-				}
-				for (int d = 0; d < problemDimension; d++) {
-					double okUzunlugu = okUzunluguOrani * (Hs[d] - Ls[d]);
-					bitisIcinDelta[d] = okUzunlugu * birimVektor[d];
-				}
 
-				for (int d = 0; d < problemDimension; d++) {
-					double alternatifKonum = members[d][pm+1] + bitisIcinDelta[d];
-					if (alternatifKonum > Hs[d] || alternatifKonum < Ls[d]) {
-						alternatifKonum = members[d][pm+1] - bitisIcinDelta[d];
-					}
-					temp[d] = alternatifKonum;
-				}
-
-				double alternatifKonumFitness = cost.function(temp);
-				if (alternatifKonumFitness < memberFitness[pm+1]) {
-					memberFitness[pm+1] = alternatifKonumFitness;
-					for (int d = 0; d < problemDimension; d++) {
-						members[d][pm+1] = temp[d];
-					}
-				}
 				
+
 				// **************************************************************
 
 				if (memberFitness[pm + 1] < fitnessOfBestMember) {
 					bestMember = pm + 1;
 					fitnessOfBestMember = memberFitness[pm + 1];
 				}
-				
-				
 
 			} else {
 				for (int d = 0; d < problemDimension; d++) {
