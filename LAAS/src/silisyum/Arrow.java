@@ -25,6 +25,10 @@ public class Arrow {
 	private Cost cost;
 	private boolean iterationState = true;
 	public double[] costValues;
+	public boolean[] yon; // "true" ise buyuk olan indekse dogru
+	Random r;
+	double[] birimVektor;
+	double[] bitisIcinDelta;
 
 	public Arrow(int _numberofElements, int _populationNumber, int _maximumIterationNumber, double _F, double _Cr,
 			double _okUzunluguOrani, double[] _L, double[] _H, AntennaArray _aA, AntennaArray _aAForP, Mask _mask,
@@ -59,6 +63,10 @@ public class Arrow {
 		temp = new double[problemDimension];
 		Ls = new double[problemDimension];
 		Hs = new double[problemDimension];
+		yon = new boolean[populationNumber/2];
+		r = new Random();
+		birimVektor = new double[problemDimension];
+		bitisIcinDelta = new double[problemDimension];
 	}
 
 	private void initialize() {
@@ -87,59 +95,12 @@ public class Arrow {
 			}
 		}
 
-		Random r = new Random();
-		double[] birimVektor = new double[problemDimension];
-		double[] bitisIcinDelta = new double[problemDimension];
 		for (int m = 0; m < populationNumber; m += 2) {
-			// basllangiclarin atanmasi
-			for (int d = 0; d < problemDimension; d++) {
-				members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
-				temp[d] = members[d][m];
-			}
-
-			memberFitness[m] = cost.function(temp);
-			if (bestMember == -1) {
-				bestMember = m;
-				fitnessOfBestMember = memberFitness[m];
-			} else if (memberFitness[m] < fitnessOfBestMember) {
-				bestMember = m;
-				fitnessOfBestMember = memberFitness[m];
-			}
-
-			// bitislerin atanmasi
-			// Oncelikle rasgele bir yon belirleme islemi gerceklestirilmeli
-			// Bunun için 1 ve -1 deðerleri arasýnda "d" adet rasgele deðer üretilmeli
-			double hipotenus = 0;
-			for (int d = 0; d < problemDimension; d++) {
-				birimVektor[d] = Math.random() * 2 - 1;
-				hipotenus += birimVektor[d] * birimVektor[d];
-			}
-			hipotenus = Math.sqrt(hipotenus);
-			for (int d = 0; d < problemDimension; d++) {
-				birimVektor[d] = birimVektor[d] / hipotenus;
-			}
-			for (int d = 0; d < problemDimension; d++) {
-				double okUzunlugu = okUzunluguOrani * (Hs[d] - Ls[d]);
-				bitisIcinDelta[d] = okUzunlugu * birimVektor[d];
-			}
-
-			for (int d = 0; d < problemDimension; d++) {
-				double yeniKonum = members[d][m] + bitisIcinDelta[d];
-				if (yeniKonum > Hs[d] || yeniKonum < Ls[d]) {
-					yeniKonum = members[d][m] - bitisIcinDelta[d];
-				}
-				members[d][m + 1] = yeniKonum;
-				temp[d] = members[d][m + 1];
-			}
-
-			memberFitness[m + 1] = cost.function(temp);
-			if (bestMember == -1) {
-				bestMember = m + 1;
-				fitnessOfBestMember = memberFitness[m + 1];
-			} else if (memberFitness[m + 1] < fitnessOfBestMember) {
-				bestMember = m + 1;
-				fitnessOfBestMember = memberFitness[m + 1];
-			}
+			
+			uyeleriDagit(m);
+			
+			// yonu belirle
+			if(memberFitness[m] > memberFitness[m+1]) yon[m/2] = true; else yon[m/2] = false;
 		}
 
 		// TEST farký belirlemek için TEST///////////////////////
@@ -159,14 +120,72 @@ public class Arrow {
 		// TEST --------------------- TEST///////////////////////
 	}
 
+	private void uyeleriDagit(int m) {
+
+		// basllangiclarin atanmasi
+		for (int d = 0; d < problemDimension; d++) {
+			members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
+			temp[d] = members[d][m];
+		}
+
+		memberFitness[m] = cost.function(temp);
+		if (bestMember == -1) {
+			bestMember = m;
+			fitnessOfBestMember = memberFitness[m];
+		} else if (memberFitness[m] < fitnessOfBestMember) {
+			bestMember = m;
+			fitnessOfBestMember = memberFitness[m];
+		}
+
+		// bitislerin atanmasi
+		// Oncelikle rasgele bir yon belirleme islemi gerceklestirilmeli
+		// Bunun için 1 ve -1 deðerleri arasýnda "d" adet rasgele deðer üretilmeli
+		double hipotenus = 0;
+		for (int d = 0; d < problemDimension; d++) {
+			birimVektor[d] = Math.random() * 2 - 1;
+			hipotenus += birimVektor[d] * birimVektor[d];
+		}
+		hipotenus = Math.sqrt(hipotenus);
+		for (int d = 0; d < problemDimension; d++) {
+			birimVektor[d] = birimVektor[d] / hipotenus;
+		}
+		for (int d = 0; d < problemDimension; d++) {
+			double okUzunlugu = okUzunluguOrani * (Hs[d] - Ls[d]);
+			bitisIcinDelta[d] = okUzunlugu * birimVektor[d];
+		}
+
+		for (int d = 0; d < problemDimension; d++) {
+			double yeniKonum = members[d][m] + bitisIcinDelta[d];
+			if (yeniKonum > Hs[d] || yeniKonum < Ls[d]) {
+				yeniKonum = members[d][m] - bitisIcinDelta[d];
+			}
+			members[d][m + 1] = yeniKonum;
+			temp[d] = members[d][m + 1];
+		}
+
+		memberFitness[m + 1] = cost.function(temp);
+		if (bestMember == -1) {
+			bestMember = m + 1;
+			fitnessOfBestMember = memberFitness[m + 1];
+		} else if (memberFitness[m + 1] < fitnessOfBestMember) {
+			bestMember = m + 1;
+			fitnessOfBestMember = memberFitness[m + 1];
+		}
+		
+	}
+
 	public boolean iterate() {
 
 		// Buraya iteratif algoritmayi yazacaksin.
 		// _______________________________________
 		double temp_mem, test_mem;
-		double[] birimVektor = new double[problemDimension];
-		double[] bitisIcinDelta = new double[problemDimension];
 		for (int pm = 0; pm < populationNumber; pm += 2) {
+			
+			if(memberFitness[pm] > memberFitness[pm+1] && yon[pm/2] != true) // yon degismis tekrar dagit
+			{
+				uyeleriDagit(pm);
+			}						
+			
 			if (memberFitness[pm + 1] < memberFitness[pm]) { // eger sonraki adim daha iyi ise ileriye dogru gitmeye
 																// devam et.
 				for (int d = 0; d < problemDimension; d++) {
