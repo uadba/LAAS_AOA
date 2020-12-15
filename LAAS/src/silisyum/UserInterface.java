@@ -254,6 +254,12 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 	private JLabel lblSvgImageExporting;
 	private Component verticalStrut_1;
 
+	private int en_boy = 400;
+	private int x1;
+	private int y1;
+	private int x2;
+	private int y2;
+
 	/**
 	 * Launch the application.
 	 */
@@ -2678,6 +2684,10 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 			}
 
 			// Here I can draw two dimensional values on a panel.
+			x1 = (int) (algoritma.members[0][0] * en_boy);
+			y1 = (int) (algoritma.members[1][0] * en_boy);
+			x2 = (int) (algoritma.members[0][1] * en_boy);
+			y2 = (int) (algoritma.members[1][1] * en_boy);
 			repaint();
 		}
 	}
@@ -2686,14 +2696,17 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 	public void paint(Graphics g) {
 
 		// Dynamically calculate size information
-		Dimension size = getSize(); // diameter
-		int d = Math.min(size.width, size.height);
-		int x = (size.width - d) / 2;
-		int y = (size.height - d) / 2;
+		// Dimension size = getSize(); // diameter
+		// int d = Math.min(size.width, size.height);
+		// int x = (size.width - d) / 2;
+		// int y = (size.height - d) / 2;
 		// draw circle (color already set to foreground)
-		g.fillOval(x, y, d, d);
-		g.setColor(Color.black);
-		g.drawOval(x, y, d, d);
+		// g.fillOval(x, y, d, d);
+		// g.setColor(Color.black);
+		// g.drawOval(x, y, d, d);
+
+		g.drawRect(1350, 450, en_boy, en_boy);
+		g.drawLine(1350 + x1, 450 + y1, 1350 + x2, 450 + y2);
 
 		super.paint(g);
 
