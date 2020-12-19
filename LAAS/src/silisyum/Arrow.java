@@ -97,10 +97,10 @@ public class Arrow {
 
 		for (int m = 0; m < populationNumber; m += 2) {
 
-			uyeleriDagit(m);
+			okDagit(m);
 
 			// yonu belirle
-			if (memberFitness[m] > memberFitness[m + 1])
+			if (memberFitness[m] > memberFitness[m + 1]) // ikincisi yani okun ucu buyukse "true"
 				yon[m / 2] = true;
 			else
 				yon[m / 2] = false;
@@ -123,7 +123,7 @@ public class Arrow {
 		// TEST --------------------- TEST///////////////////////
 	}
 
-	private void uyeleriDagit(int m) {
+	private void okDagit(int m) {
 
 		// basllangiclarin atanmasi
 		for (int d = 0; d < problemDimension; d++) {
@@ -157,6 +157,7 @@ public class Arrow {
 			bitisIcinDelta[d] = okUzunlugu * birimVektor[d];
 		}
 
+		// if it exceeds the border, pull it into the safe area
 		for (int d = 0; d < problemDimension; d++) {
 			double yeniKonum = members[d][m] + bitisIcinDelta[d];
 			if (yeniKonum > Hs[d] || yeniKonum < Ls[d]) {
@@ -187,7 +188,7 @@ public class Arrow {
 			if (pm != bestMember || (pm+1) != bestMember) { // en iyi uye degilse dagit.
 				if (memberFitness[pm] > memberFitness[pm + 1] && yon[pm / 2] != true) // yon degismis tekrar dagit
 				{
-					uyeleriDagit(pm);
+					okDagit(pm);
 				} 
 			}
 			
