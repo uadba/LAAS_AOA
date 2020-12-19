@@ -1679,6 +1679,87 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 
 		comboBoxNumberOfPoints.setSelectedIndex(1); // This is here because it triggers addActionListener which runs
 													// algorithmExecuter
+		
+		// burayi sil -------------------------------------------------++++++++++++++
+		//File file = fc.getSelectedFile();
+
+		CurrentConfiguration cc = null;
+
+		try {
+			FileInputStream fileIn = new FileInputStream("C:\\Users\\Suad\\Documents\\A_Config_Files_of_LAAS\\Wide_Null.aas");
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			cc = (CurrentConfiguration) in.readObject();
+			in.close();
+			fileIn.close();
+
+			// Assign the values which come from the file to the antenna array parameters
+			numberOfElements_Field.setText(Integer.toString(cc.numberofElements));
+			chckbxAmplitude.setSelected(cc.amplitudeIsUsed);
+			chckbxPhase.setSelected(cc.phaseIsUsed);
+			chckbxPosition.setSelected(cc.positionIsUsed);
+
+			textField_maximumValueAmplitude.setText(Double.toString(cc.H[0]));
+			textField_maximumValuePhase.setText(Double.toString(cc.H[1]));
+			textField_maximumValuePosition.setText(Double.toString(cc.H[2]));
+
+			textField_minimumValueAmplitude.setText(Double.toString(cc.L[0]));
+			textField_minimumValuePhase.setText(Double.toString(cc.L[1]));
+			textField_minimumValuePosition.setText(Double.toString(cc.L[2]));
+
+			createAntennaArray(); // It is also set the "numberOfElements" field
+
+			for (int s = 0; s < cc.amplitudeValues.length; s++) {
+				antennaArray.amplitude[s] = cc.amplitudeValues[s];
+				antennaArray.phase[s] = cc.phaseValues[s];
+				antennaArray.position[s] = cc.positionValues[s];
+			}
+
+			refreshForChckbxAmplitude();
+			refreshForChckbxPhase();
+			refreshForChckbxPosition();
+			drawPlotWithInitialParameterValues();
+			convergenceSeries.clear();
+
+			// Assign the values which come from the file to the outer mask parameters
+			mask.outerMaskSegments.clear();
+			int numberOfOuterMask = cc.nameForOuter.length;
+			for (int s = 0; s < numberOfOuterMask; s++) {
+				mask.addNewOuterMaskSegments(cc.nameForOuter[s], cc.startAngleForOuter[s],
+						cc.stopAngleForOuter[s], cc.numberOfPointsForOuter[s], cc.levelForOuter[s],
+						cc.weightForOuter[s]);
+			}
+			refreshOuterMaskSegmentsList();
+			refreshOuterMaskSegmentDetailsTable();
+			drawOuterMask();
+
+			// Assign the values which come from the file to the inner mask parameters
+			mask.innerMaskSegments.clear();
+			int numberOfInnerMask = cc.nameForInner.length;
+			for (int s = 0; s < numberOfInnerMask; s++) {
+				mask.addNewInnerMaskSegments(cc.nameForInner[s], cc.startAngleForInner[s],
+						cc.stopAngleForInner[s], cc.numberOfPointsForInner[s], cc.levelForInner[s],
+						cc.weightForInner[s]);
+			}
+			refreshInnerMaskSegmentsList();
+			refreshInnerMaskSegmentDetailsTable();
+			drawInnerMask();
+
+			// Assign the values which come from the file to the algorithm parameters
+			populationNumber_textField.setText(Integer.toString(cc.populationNumber));
+			maximumIterationNumber_textField.setText(Integer.toString(cc.maximumIterationNumber));
+			F_textField.setText(Double.toString(cc.F));
+			Cr_textField.setText(Double.toString(cc.Cr));
+
+			getParametersFromUserInterface();
+
+		} catch (IOException i) {
+			i.printStackTrace();
+			return;
+		} catch (ClassNotFoundException c) {
+			c.printStackTrace();
+			return;
+		}
+		// ------------------------------------------------------------++++++++++++++
 	}
 
 	void exportChartAsSVG(JFreeChart chart, File svgFile) throws IOException {
@@ -2634,7 +2715,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 					iterationHasNotCompletedYet = algoritma.iterate();
 					double[] valuesOfBestMember = new double[problemDimension];
 					for (int d = 0; d < problemDimension; d++) {
-						valuesOfBestMember[d] = algoritma.members[d][algoritma.bestMemberID];
+						valuesOfBestMember[d] = algoritma.members[d][algoritma.bestMemberID];						
 					}
 					if (iterationHasNotCompletedYet == false)
 						firstOrLastPlot = true;
@@ -2647,6 +2728,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 		@Override
 		protected void process(List<BestValues> chunks) {
 			bestValues = chunks.get(chunks.size() - 1);
+			//System.out.println(bestValues.valuesOfBestMember[0]);
 			int progress = (int) (100 * algoritma.iterationIndex / algoritma.maximumIterationNumber);
 			progressBar.setValue(progress);
 			if (iterationHasNotCompletedYet == false) {

@@ -131,10 +131,23 @@ public class Arrow {
 				temp[d] = members[d][m];
 			}
 		} else {
-			for (int d = 0; d < problemDimension; d++) {
-				members[d][m] = members[d][bestMemberID];
-				temp[d] = members[d][m];
+			double rasgele = Math.random();
+			double eniyiDegeriSecmeOlasiligi = iterasyonIndeksineOranla(1, true);
+//			if (iterationIndex < 14 || iterationIndex > maximumIterationNumber - 14)
+//				System.out.println(iterasyonIndeksineOranla(1, false));
+//			System.out.println(eniyiDegeriSecmeOlasiligi);
+			if (rasgele < eniyiDegeriSecmeOlasiligi) {
+				for (int d = 0; d < problemDimension; d++) {
+					members[d][m] = members[d][bestMemberID];
+					temp[d] = members[d][m];
+				}
+			} else {
+				for (int d = 0; d < problemDimension; d++) {
+					members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
+					temp[d] = members[d][m];
+				}
 			}
+
 		}
 
 		memberFitness[m] = cost.function(temp);
@@ -182,6 +195,17 @@ public class Arrow {
 
 	}
 
+	private double iterasyonIndeksineOranla(double gelen, boolean artarak_mi) {
+		double giden;
+
+		if (artarak_mi == true)
+			giden = gelen * ((double) (iterationIndex + 1) / maximumIterationNumber);
+		else
+			giden = gelen * (1 - ((double) (iterationIndex + 1) / maximumIterationNumber));
+
+		return giden;
+	}
+
 	public boolean iterate() {
 
 		// Buraya iteratif algoritmayi yazacaksin.
@@ -202,28 +226,31 @@ public class Arrow {
 
 			if (memberFitness[m + 1] < memberFitness[m]) { // eger sonraki adim daha iyi ise ileriye dogru gitmeye
 															// devam et.
-				for (int d = 0; d < problemDimension; d++) {
-					yedege_al_mem = members[d][m + 1];
-					test_mem = members[d][m + 1] + (members[d][m + 1] - members[d][m]);
-					if (test_mem > Hs[d] || test_mem < Ls[d]) {
-						test_mem = members[d][m + 1] - (members[d][m + 1] - members[d][m]);
+				if (memberFitness[m + 1] == bestMemberID) {
+										
+					for (int d = 0; d < problemDimension; d++) {
+						yedege_al_mem = members[d][m + 1];
+						test_mem = members[d][m + 1] + (members[d][m + 1] - members[d][m]);
+						if (test_mem > Hs[d] || test_mem < Ls[d]) {
+							test_mem = members[d][m + 1] - (members[d][m + 1] - members[d][m]);
+						}
+						members[d][m + 1] = test_mem;
+						members[d][m] = yedege_al_mem;
+						temp[d] = members[d][m + 1];
 					}
-					members[d][m + 1] = test_mem;
-					members[d][m] = yedege_al_mem;
-					temp[d] = members[d][m + 1];
-				}
 
-				memberFitness[m] = memberFitness[m + 1];
+					memberFitness[m] = memberFitness[m + 1];
 
-				memberFitness[m + 1] = cost.function(temp);
+					memberFitness[m + 1] = cost.function(temp);
 
-				// Alternative path with a deviation. ***************************
+					// Alternative path with a deviation. ***************************
 
-				// **************************************************************
+					// **************************************************************
 
-				if (memberFitness[m + 1] < fitnessOfBestMember) {
-					bestMemberID = m + 1;
-					fitnessOfBestMember = memberFitness[m + 1];
+					if (memberFitness[m + 1] < fitnessOfBestMember) {
+						bestMemberID = m + 1;
+						fitnessOfBestMember = memberFitness[m + 1];
+					}
 				}
 
 			} else {
