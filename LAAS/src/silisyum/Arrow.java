@@ -28,7 +28,7 @@ public class Arrow {
 	public boolean[] yon; // "true" ise buyuk olan indekse dogru
 	Random r;
 	double[] birimVektor;
-	double[] bitisIcinDelta;
+	double bitisIcinDelta;
 
 	public Arrow(int _numberofElements, int _populationNumber, int _maximumIterationNumber, double _F, double _Cr,
 			double _okUzunluguOrani, double[] _L, double[] _H, AntennaArray _aA, AntennaArray _aAForP, Mask _mask,
@@ -66,7 +66,6 @@ public class Arrow {
 		yon = new boolean[populationNumber / 2];
 		r = new Random();
 		birimVektor = new double[problemDimension];
-		bitisIcinDelta = new double[problemDimension];
 	}
 
 	private void initialize() {
@@ -151,17 +150,15 @@ public class Arrow {
 		hipotenus = Math.sqrt(hipotenus);
 		for (int d = 0; d < problemDimension; d++) {
 			birimVektor[d] = birimVektor[d] / hipotenus;
-		}
-		for (int d = 0; d < problemDimension; d++) {
-			double okUzunlugu = okUzunluguOrani * (Hs[d] - Ls[d]);
-			bitisIcinDelta[d] = okUzunlugu * birimVektor[d];
-		}
 
-		// if it exceeds the border, pull it into the safe area
-		for (int d = 0; d < problemDimension; d++) {
-			double yeniKonum = members[d][m] + bitisIcinDelta[d];
+			// the distance between tip and tail
+			double okUzunlugu = okUzunluguOrani * (Hs[d] - Ls[d]);
+			bitisIcinDelta = okUzunlugu * birimVektor[d];
+
+			// if it exceeds the border, pull it into the safe area
+			double yeniKonum = members[d][m] + bitisIcinDelta;
 			if (yeniKonum > Hs[d] || yeniKonum < Ls[d]) {
-				yeniKonum = members[d][m] - bitisIcinDelta[d];
+				yeniKonum = members[d][m] - bitisIcinDelta;
 			}
 			members[d][m + 1] = yeniKonum;
 			temp[d] = members[d][m + 1];
@@ -182,58 +179,64 @@ public class Arrow {
 
 		// Buraya iteratif algoritmayi yazacaksin.
 		// _______________________________________
-		double temp_mem, test_mem;
-		for (int pm = 0; pm < populationNumber; pm += 2) {
+		double yedege_al_mem, test_mem;
+		for (int m = 0; m < populationNumber; m += 2) {
 
-			if (pm != bestMember || (pm+1) != bestMember) { // en iyi uye degilse dagit.
-				if (memberFitness[pm] > memberFitness[pm + 1] && yon[pm / 2] != true) // yon degismis tekrar dagit
+			if (m != bestMember || (m + 1) != bestMember) { // en iyi uyeye dokunma
+				if (memberFitness[m] >= memberFitness[m + 1] && yon[m / 2] != true) // yon degismis tekrar dagit
 				{
-					okDagit(pm);
-				} 
+					okDagit(m);
+				}
+				if (memberFitness[m] < memberFitness[m + 1] && yon[m / 2] != false) // bu da yon degistirmis
+				{
+					okDagit(m);					
+				}
 			}
-			
-			if (memberFitness[pm + 1] < memberFitness[pm]) { // eger sonraki adim daha iyi ise ileriye dogru gitmeye
+
+			if (memberFitness[m + 1] < memberFitness[m]) { // eger sonraki adim daha iyi ise ileriye dogru gitmeye
 																// devam et.
 				for (int d = 0; d < problemDimension; d++) {
-					temp_mem = members[d][pm + 1];
-					test_mem = members[d][pm + 1] + (members[d][pm + 1] - members[d][pm]);
+					yedege_al_mem = members[d][m + 1];
+					test_mem = members[d][m + 1] + (members[d][m + 1] - members[d][m]);
 					if (test_mem > Hs[d] || test_mem < Ls[d]) {
-						test_mem = members[d][pm + 1] - (members[d][pm + 1] - members[d][pm]);
+						test_mem = members[d][m + 1] - (members[d][m + 1] - members[d][m]);
 					}
-					members[d][pm + 1] = test_mem;
-					members[d][pm] = temp_mem;
-					temp[d] = members[d][pm + 1];
+					members[d][m + 1] = test_mem;
+					members[d][m] = yedege_al_mem;
+					temp[d] = members[d][m + 1];
 				}
 
-				memberFitness[pm] = memberFitness[pm + 1];
-				memberFitness[pm + 1] = cost.function(temp);
+				memberFitness[m] = memberFitness[m + 1];
+				
+				memberFitness[m + 1] = cost.function(temp);
 
 				// Alternative path with a deviation. ***************************
 
 				// **************************************************************
 
-				if (memberFitness[pm + 1] < fitnessOfBestMember) {
-					bestMember = pm + 1;
-					fitnessOfBestMember = memberFitness[pm + 1];
+				if (memberFitness[m + 1] < fitnessOfBestMember) {
+					bestMember = m + 1;
+					fitnessOfBestMember = memberFitness[m + 1];
 				}
 
 			} else {
 				for (int d = 0; d < problemDimension; d++) {
-					temp_mem = members[d][pm];
-					test_mem = members[d][pm] + (members[d][pm] - members[d][pm + 1]);
+					yedege_al_mem = members[d][m];
+					test_mem = members[d][m] + (members[d][m] - members[d][m + 1]);
 					if (test_mem > Hs[d] || test_mem < Ls[d]) {
-						test_mem = members[d][pm] - (members[d][pm] - members[d][pm + 1]);
+						test_mem = members[d][m] - (members[d][m] - members[d][m + 1]);
 					}
-					members[d][pm] = test_mem;
-					members[d][pm + 1] = temp_mem;
-					temp[d] = members[d][pm];
+					members[d][m] = test_mem;
+					members[d][m + 1] = yedege_al_mem;
+					temp[d] = members[d][m];
 				}
 
-				memberFitness[pm + 1] = memberFitness[pm];
-				memberFitness[pm] = cost.function(temp);
-				if (memberFitness[pm] < fitnessOfBestMember) {
-					bestMember = pm;
-					fitnessOfBestMember = memberFitness[pm];
+				memberFitness[m + 1] = memberFitness[m];
+				memberFitness[m] = cost.function(temp);
+				
+				if (memberFitness[m] < fitnessOfBestMember) {
+					bestMember = m;
+					fitnessOfBestMember = memberFitness[m];
 				}
 			}
 		}
