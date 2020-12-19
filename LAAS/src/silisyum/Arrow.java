@@ -172,7 +172,7 @@ public class Arrow {
 			birimVektor[d] = birimVektor[d] / hipotenus;
 
 			// the distance between tip and tail
-			double okUzunlugu = okUzunluguOrani * (Hs[d] - Ls[d]);
+			double okUzunlugu = iterasyonIndeksineOranla(okUzunluguOrani, false) * (Hs[d] - Ls[d]);
 			bitisIcinDelta = okUzunlugu * birimVektor[d];
 
 			// if it exceeds the border, pull it into the safe area
