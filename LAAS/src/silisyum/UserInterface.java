@@ -122,7 +122,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 	private AntennaArray antennaArrayForPresentation;
 
 	// Yeni algoritmalar buraya eklenebilir -------------
-	// private DifferentialEvolution algoritma;
+	//private DifferentialEvolution algoritma;
 	private Arrow algoritma;
 	// ---------------------------------------------------
 
@@ -2416,10 +2416,11 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 
 	private void createMainObjects() {
 
-		// algoritma = new DifferentialEvolution(numberOfElements, populationNumber,
-		// maximumIterationNumber, F, Cr, L, H, antennaArray,
-		// antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed,
-		// positionIsUsed);
+//		algoritma = new DifferentialEvolution(numberOfElements, populationNumber,
+//		maximumIterationNumber, F, Cr, L, H, antennaArray,
+//		antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed,
+//		positionIsUsed);
+		
 		double okUzunluguOrani = 0.05;
 		algoritma = new Arrow(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, okUzunluguOrani, L, H,
 				antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed, positionIsUsed);
@@ -2633,11 +2634,11 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 					iterationHasNotCompletedYet = algoritma.iterate();
 					double[] valuesOfBestMember = new double[problemDimension];
 					for (int d = 0; d < problemDimension; d++) {
-						valuesOfBestMember[d] = algoritma.members[d][algoritma.bestMember];
+						valuesOfBestMember[d] = algoritma.members[d][algoritma.bestMemberID];
 					}
 					if (iterationHasNotCompletedYet == false)
 						firstOrLastPlot = true;
-					publish(new BestValues(algoritma.bestMember, algoritma.fitnessOfBestMember, valuesOfBestMember));
+					publish(new BestValues(algoritma.bestMemberID, algoritma.fitnessOfBestMember, valuesOfBestMember));
 				}
 			}
 			return null;

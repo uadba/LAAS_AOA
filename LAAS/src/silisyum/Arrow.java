@@ -10,7 +10,7 @@ public class Arrow {
 	public double[][] members;
 	private double[] memberFitness;
 	private double[] temp;
-	public int bestMember = -1;
+	public int bestMemberID = -1;
 	public double fitnessOfBestMember = 0;
 	public int maximumIterationNumber;
 	private double okUzunluguOrani;
@@ -96,7 +96,7 @@ public class Arrow {
 
 		for (int m = 0; m < populationNumber; m += 2) {
 
-			okDagit(m);
+			okDagit(m, 0);
 
 			// yonu belirle
 			if (memberFitness[m] > memberFitness[m + 1]) // ikincisi yani okun ucu buyukse "true"
@@ -122,20 +122,27 @@ public class Arrow {
 		// TEST --------------------- TEST///////////////////////
 	}
 
-	private void okDagit(int m) {
+	private void okDagit(int m, int hangiAsama) {
 
 		// basllangiclarin atanmasi
-		for (int d = 0; d < problemDimension; d++) {
-			members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
-			temp[d] = members[d][m];
+		if (hangiAsama == 0) {
+			for (int d = 0; d < problemDimension; d++) {
+				members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
+				temp[d] = members[d][m];
+			}
+		} else {
+			for (int d = 0; d < problemDimension; d++) {
+				members[d][m] = members[d][bestMemberID];
+				temp[d] = members[d][m];
+			}
 		}
 
 		memberFitness[m] = cost.function(temp);
-		if (bestMember == -1) {
-			bestMember = m;
+		if (bestMemberID == -1) {
+			bestMemberID = m;
 			fitnessOfBestMember = memberFitness[m];
 		} else if (memberFitness[m] < fitnessOfBestMember) {
-			bestMember = m;
+			bestMemberID = m;
 			fitnessOfBestMember = memberFitness[m];
 		}
 
@@ -165,11 +172,11 @@ public class Arrow {
 		}
 
 		memberFitness[m + 1] = cost.function(temp);
-		if (bestMember == -1) {
-			bestMember = m + 1;
+		if (bestMemberID == -1) {
+			bestMemberID = m + 1;
 			fitnessOfBestMember = memberFitness[m + 1];
 		} else if (memberFitness[m + 1] < fitnessOfBestMember) {
-			bestMember = m + 1;
+			bestMemberID = m + 1;
 			fitnessOfBestMember = memberFitness[m + 1];
 		}
 
@@ -182,19 +189,19 @@ public class Arrow {
 		double yedege_al_mem, test_mem;
 		for (int m = 0; m < populationNumber; m += 2) {
 
-			if (m != bestMember || (m + 1) != bestMember) { // en iyi uyeye dokunma
+			if (m != bestMemberID || (m + 1) != bestMemberID) { // en iyi uyeye dokunma
 				if (memberFitness[m] >= memberFitness[m + 1] && yon[m / 2] != true) // yon degismis tekrar dagit
 				{
-					okDagit(m);
+					okDagit(m, 1);
 				}
 				if (memberFitness[m] < memberFitness[m + 1] && yon[m / 2] != false) // bu da yon degistirmis
 				{
-					okDagit(m);					
+					okDagit(m, 1);
 				}
 			}
 
 			if (memberFitness[m + 1] < memberFitness[m]) { // eger sonraki adim daha iyi ise ileriye dogru gitmeye
-																// devam et.
+															// devam et.
 				for (int d = 0; d < problemDimension; d++) {
 					yedege_al_mem = members[d][m + 1];
 					test_mem = members[d][m + 1] + (members[d][m + 1] - members[d][m]);
@@ -207,7 +214,7 @@ public class Arrow {
 				}
 
 				memberFitness[m] = memberFitness[m + 1];
-				
+
 				memberFitness[m + 1] = cost.function(temp);
 
 				// Alternative path with a deviation. ***************************
@@ -215,7 +222,7 @@ public class Arrow {
 				// **************************************************************
 
 				if (memberFitness[m + 1] < fitnessOfBestMember) {
-					bestMember = m + 1;
+					bestMemberID = m + 1;
 					fitnessOfBestMember = memberFitness[m + 1];
 				}
 
@@ -233,9 +240,9 @@ public class Arrow {
 
 				memberFitness[m + 1] = memberFitness[m];
 				memberFitness[m] = cost.function(temp);
-				
+
 				if (memberFitness[m] < fitnessOfBestMember) {
-					bestMember = m;
+					bestMemberID = m;
 					fitnessOfBestMember = memberFitness[m];
 				}
 			}

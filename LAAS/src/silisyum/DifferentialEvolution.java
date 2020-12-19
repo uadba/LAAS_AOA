@@ -11,7 +11,7 @@ public class DifferentialEvolution {
 	private double[] memberFitness;
 	private double[] Xtrial;
 	private double[] temp;
-	public int bestMember = -1;
+	public int bestMemberID = -1;
 	public double fitnessOfBestMember = 0;
 	public int maximumIterationNumber;
 	private double F;
@@ -96,12 +96,12 @@ public class DifferentialEvolution {
 				temp[d] = members[d][m];
 			}			
 			memberFitness[m] = cost.function(temp);
-			if(bestMember == -1) {
-				bestMember = m;
+			if(bestMemberID == -1) {
+				bestMemberID = m;
 				fitnessOfBestMember = memberFitness[m];
 			}
-			else if(memberFitness[m] < bestMember) {
-				bestMember = m;
+			else if(memberFitness[m] < bestMemberID) {
+				bestMemberID = m;
 				fitnessOfBestMember = memberFitness[m];
 			}
 			
@@ -139,8 +139,8 @@ public class DifferentialEvolution {
 				}
 				memberFitness[individual] = fitnessOfTrial;				
 			}
-			if(fitnessOfTrial < memberFitness[bestMember]) {
-				bestMember = individual;
+			if(fitnessOfTrial < memberFitness[bestMemberID]) {
+				bestMemberID = individual;
 				fitnessOfBestMember = memberFitness[individual];
 			}
 		}
