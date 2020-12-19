@@ -99,7 +99,7 @@ public class Arrow {
 			okDagit(m, 0);
 
 			// yonu belirle
-			if (memberFitness[m] > memberFitness[m + 1]) // ikincisi yani okun ucu buyukse "true"
+			if (memberFitness[m] >= memberFitness[m + 1]) // kuyruk buyukse "true"
 				yon[m / 2] = true;
 			else
 				yon[m / 2] = false;
@@ -213,7 +213,7 @@ public class Arrow {
 		double yedege_al_mem, test_mem;
 		for (int m = 0; m < populationNumber; m += 2) {
 
-			if (m != bestMemberID || (m + 1) != bestMemberID) { // en iyi uyeye dokunma
+			if (m != bestMemberID && (m + 1) != bestMemberID) { // en iyi uyeye dokunma
 				if (memberFitness[m] >= memberFitness[m + 1] && yon[m / 2] != true) // yon degismis tekrar dagit
 				{
 					okDagit(m, 1);
@@ -226,31 +226,28 @@ public class Arrow {
 
 			if (memberFitness[m + 1] < memberFitness[m]) { // eger sonraki adim daha iyi ise ileriye dogru gitmeye
 															// devam et.
-				if (memberFitness[m + 1] == bestMemberID) {
-										
-					for (int d = 0; d < problemDimension; d++) {
-						yedege_al_mem = members[d][m + 1];
-						test_mem = members[d][m + 1] + (members[d][m + 1] - members[d][m]);
-						if (test_mem > Hs[d] || test_mem < Ls[d]) {
-							test_mem = members[d][m + 1] - (members[d][m + 1] - members[d][m]);
-						}
-						members[d][m + 1] = test_mem;
-						members[d][m] = yedege_al_mem;
-						temp[d] = members[d][m + 1];
+				for (int d = 0; d < problemDimension; d++) {
+					yedege_al_mem = members[d][m + 1];
+					test_mem = members[d][m + 1] + (members[d][m + 1] - members[d][m]);
+					if (test_mem > Hs[d] || test_mem < Ls[d]) {
+						test_mem = members[d][m + 1] - (members[d][m + 1] - members[d][m]);
 					}
+					members[d][m + 1] = test_mem;
+					members[d][m] = yedege_al_mem;
+					temp[d] = members[d][m + 1];
+				}
 
-					memberFitness[m] = memberFitness[m + 1];
+				memberFitness[m] = memberFitness[m + 1];
 
-					memberFitness[m + 1] = cost.function(temp);
+				memberFitness[m + 1] = cost.function(temp);
 
-					// Alternative path with a deviation. ***************************
+				// Alternative path with a deviation. ***************************
 
-					// **************************************************************
+				// **************************************************************
 
-					if (memberFitness[m + 1] < fitnessOfBestMember) {
-						bestMemberID = m + 1;
-						fitnessOfBestMember = memberFitness[m + 1];
-					}
+				if (memberFitness[m + 1] < fitnessOfBestMember) {
+					bestMemberID = m + 1;
+					fitnessOfBestMember = memberFitness[m + 1];
 				}
 
 			} else {
