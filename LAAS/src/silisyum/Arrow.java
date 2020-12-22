@@ -1,5 +1,6 @@
 package silisyum;
 
+import java.util.Iterator;
 import java.util.Random;
 
 public class Arrow {
@@ -73,7 +74,7 @@ public class Arrow {
 		goodMembers = new double[problemDimension][populationNumber];
 		goodMemberFitness = new double[populationNumber];
 	}
-
+	
 	private void initialize() {
 
 		int delta = 0;
@@ -103,7 +104,10 @@ public class Arrow {
 		for (int m = 0; m < populationNumber; m += 2) {
 
 			okDagit(m, 0);
-
+			
+			/////////////////////////
+			
+			
 			// yonu belirle
 			if (memberFitness[m] >= memberFitness[m + 1]) // kuyruk buyukse "true"
 				yon[m / 2] = true;
@@ -139,7 +143,6 @@ public class Arrow {
 		} else {
 			double rasgele = Math.random();
 			double eniyiDegeriSecmeOlasiligi = iterasyonIndeksineOranla(0, 1, true);
-			System.out.println("olasilik:"+eniyiDegeriSecmeOlasiligi);
 //			if (iterationIndex < 14 || iterationIndex > maximumIterationNumber - 14)
 //				System.out.println(iterasyonIndeksineOranla(1, false));
 //			System.out.println(eniyiDegeriSecmeOlasiligi);
@@ -181,8 +184,7 @@ public class Arrow {
 			// the distance between tip and tail
 			double carpan = iterasyonIndeksineOranla(okUzunluguBaslangici, okUzunluguBitisi, false);
 			//System.out.println("nasil:"+carpan);
-			double okUzunlugu = carpan * (Hs[d] - Ls[d]);
-						
+			double okUzunlugu = carpan * (Hs[d] - Ls[d]);						
 			bitisIcinDelta = okUzunlugu * birimVektor[d];
 
 			// if it exceeds the border, pull it into the safe area
