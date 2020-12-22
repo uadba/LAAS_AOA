@@ -8,12 +8,13 @@ public class Arrow {
 	private int problemDimension = 0;
 	private int populationNumber;
 	public double[][] members;
-	private double[] memberFitness;
+	private double[] memberFitness;	
 	private double[] temp;
 	public int bestMemberID = -1;
 	public double fitnessOfBestMember = 0;
 	public int maximumIterationNumber;
-	private double okUzunluguOrani;
+	private double okUzunluguBaslangici;
+	private double okUzunluguBitisi;
 	public int iterationIndex = 0;
 	private double[] L;
 	private double[] H;
@@ -29,15 +30,18 @@ public class Arrow {
 	Random r;
 	double[] birimVektor;
 	double bitisIcinDelta;
+	public double[][] goodMembers;
+	private double[] goodMemberFitness;
 
 	public Arrow(int _numberofElements, int _populationNumber, int _maximumIterationNumber, double _F, double _Cr,
-			double _okUzunluguOrani, double[] _L, double[] _H, AntennaArray _aA, AntennaArray _aAForP, Mask _mask,
+			double _okUzunluguBaslangici, double _okUzunluguBitisi, double[] _L, double[] _H, AntennaArray _aA, AntennaArray _aAForP, Mask _mask,
 			boolean _amplitudeIsUsed, boolean _phaseIsUsed, boolean _positionIsUsed) {
 
 		numberofElements = _numberofElements;
 		populationNumber = _populationNumber;
 		maximumIterationNumber = _maximumIterationNumber;
-		okUzunluguOrani = _okUzunluguOrani;
+		okUzunluguBaslangici = _okUzunluguBaslangici;
+		okUzunluguBitisi = _okUzunluguBitisi;
 		L = _L;
 		H = _H;
 		amplitudeIsUsed = _amplitudeIsUsed;
@@ -66,6 +70,8 @@ public class Arrow {
 		yon = new boolean[populationNumber / 2];
 		r = new Random();
 		birimVektor = new double[problemDimension];
+		goodMembers = new double[problemDimension][populationNumber];
+		goodMemberFitness = new double[populationNumber];
 	}
 
 	private void initialize() {
@@ -132,7 +138,8 @@ public class Arrow {
 			}
 		} else {
 			double rasgele = Math.random();
-			double eniyiDegeriSecmeOlasiligi = iterasyonIndeksineOranla(1, true);
+			double eniyiDegeriSecmeOlasiligi = iterasyonIndeksineOranla(0, 1, true);
+			System.out.println("olasilik:"+eniyiDegeriSecmeOlasiligi);
 //			if (iterationIndex < 14 || iterationIndex > maximumIterationNumber - 14)
 //				System.out.println(iterasyonIndeksineOranla(1, false));
 //			System.out.println(eniyiDegeriSecmeOlasiligi);
@@ -172,7 +179,10 @@ public class Arrow {
 			birimVektor[d] = birimVektor[d] / hipotenus;
 
 			// the distance between tip and tail
-			double okUzunlugu = iterasyonIndeksineOranla(okUzunluguOrani, false) * (Hs[d] - Ls[d]);
+			double carpan = iterasyonIndeksineOranla(okUzunluguBaslangici, okUzunluguBitisi, false);
+			//System.out.println("nasil:"+carpan);
+			double okUzunlugu = carpan * (Hs[d] - Ls[d]);
+						
 			bitisIcinDelta = okUzunlugu * birimVektor[d];
 
 			// if it exceeds the border, pull it into the safe area
@@ -195,13 +205,13 @@ public class Arrow {
 
 	}
 
-	private double iterasyonIndeksineOranla(double gelen, boolean artarak_mi) {
+	private double iterasyonIndeksineOranla(double baslangic, double bitis, boolean artarak_mi) {
 		double giden;
 
 		if (artarak_mi == true)
-			giden = gelen * ((double) (iterationIndex + 1) / maximumIterationNumber);
+			giden = baslangic + (bitis - baslangic) * ((double) (iterationIndex + 1) / maximumIterationNumber);
 		else
-			giden = gelen * (1 - ((double) (iterationIndex + 1) / maximumIterationNumber));
+			giden = baslangic - (baslangic - bitis) * ((double) (iterationIndex + 1) / maximumIterationNumber);//(1 - ((double) (iterationIndex + 1) / maximumIterationNumber));
 
 		return giden;
 	}
