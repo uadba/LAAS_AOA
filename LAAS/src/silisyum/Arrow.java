@@ -1,6 +1,5 @@
 package silisyum;
 
-import java.util.Iterator;
 import java.util.Random;
 
 public class Arrow {
@@ -31,8 +30,7 @@ public class Arrow {
 	Random r;
 	double[] birimVektor;
 	double bitisIcinDelta;
-	public double[][] goodMembers;
-	private double[] goodMemberFitness;
+
 
 	public Arrow(int _numberofElements, int _populationNumber, int _maximumIterationNumber, double _F, double _Cr,
 			double _okUzunluguBaslangici, double _okUzunluguBitisi, double[] _L, double[] _H, AntennaArray _aA, AntennaArray _aAForP, Mask _mask,
@@ -71,8 +69,6 @@ public class Arrow {
 		yon = new boolean[populationNumber / 2];
 		r = new Random();
 		birimVektor = new double[problemDimension];
-		goodMembers = new double[problemDimension][populationNumber];
-		goodMemberFitness = new double[populationNumber];
 	}
 	
 	private void initialize() {
@@ -115,7 +111,7 @@ public class Arrow {
 				yon[m / 2] = false;
 		}
 
-		// TEST farký belirlemek için TEST///////////////////////
+		// TEST farki belirlemek için TEST///////////////////////
 //		double fark;
 //		double ghipo;
 //		for (int pm = 0; pm < populationNumber; pm += 2) {
@@ -189,7 +185,7 @@ public class Arrow {
 
 			// if it exceeds the border, pull it into the safe area
 			double yeniKonum = members[d][m] + bitisIcinDelta;
-			if (yeniKonum > Hs[d] || yeniKonum < Ls[d]) {
+			if (yeniKonum > Hs[d] || yeniKonum < Ls[d]) {				
 				yeniKonum = members[d][m] - bitisIcinDelta;
 			}
 			members[d][m + 1] = yeniKonum;
