@@ -8,7 +8,7 @@ public class Arrow {
 	private int problemDimension = 0;
 	private int populationNumber;
 	public double[][] members;
-	private double[] memberFitness;	
+	private double[] memberFitness;
 	private double[] temp;
 	public int bestMemberID = -1;
 	public double fitnessOfBestMember = 0;
@@ -30,11 +30,11 @@ public class Arrow {
 	Random r;
 	double[] birimVektor;
 	double bitisIcinDelta;
-
+	private IyiUyelerinListesi iuListesi;
 
 	public Arrow(int _numberofElements, int _populationNumber, int _maximumIterationNumber, double _F, double _Cr,
-			double _okUzunluguBaslangici, double _okUzunluguBitisi, double[] _L, double[] _H, AntennaArray _aA, AntennaArray _aAForP, Mask _mask,
-			boolean _amplitudeIsUsed, boolean _phaseIsUsed, boolean _positionIsUsed) {
+			double _okUzunluguBaslangici, double _okUzunluguBitisi, double[] _L, double[] _H, AntennaArray _aA,
+			AntennaArray _aAForP, Mask _mask, boolean _amplitudeIsUsed, boolean _phaseIsUsed, boolean _positionIsUsed) {
 
 		numberofElements = _numberofElements;
 		populationNumber = _populationNumber;
@@ -70,7 +70,7 @@ public class Arrow {
 		r = new Random();
 		birimVektor = new double[problemDimension];
 	}
-	
+
 	private void initialize() {
 
 		int delta = 0;
@@ -97,13 +97,16 @@ public class Arrow {
 			}
 		}
 
+		// Burada iyi uyelerin listesini olustur.
+		iuListesi = new IyiUyelerinListesi(50, problemDimension, populationNumber, Ls, Hs, cost);
+		iuListesi.listeyiDoldur();
+
 		for (int m = 0; m < populationNumber; m += 2) {
 
 			okDagit(m, 0);
-			
+
 			/////////////////////////
-			
-			
+
 			// yonu belirle
 			if (memberFitness[m] >= memberFitness[m + 1]) // kuyruk buyukse "true"
 				yon[m / 2] = true;
@@ -130,11 +133,13 @@ public class Arrow {
 
 	private void okDagit(int m, int hangiAsama) {
 
-		// basllangiclarin atanmasi
+		// baslangiclarin atanmasi
 		if (hangiAsama == 0) {
+			temp = iuListesi.rasgeleBirUyeSec();
 			for (int d = 0; d < problemDimension; d++) {
-				members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
-				temp[d] = members[d][m];
+				//members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
+				//temp[d] = members[d][m];
+				members[d][m] = temp[d];
 			}
 		} else {
 			double rasgele = Math.random();
@@ -148,10 +153,15 @@ public class Arrow {
 					temp[d] = members[d][m];
 				}
 			} else {
+				temp = iuListesi.rasgeleBirUyeSec();
 				for (int d = 0; d < problemDimension; d++) {
-					members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
-					temp[d] = members[d][m];
+					members[d][m] = temp[d];
 				}
+				
+				// for (int d = 0; d < problemDimension; d++) {
+				// members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
+				// temp[d] = members[d][m];
+				// }
 			}
 
 		}
@@ -179,13 +189,13 @@ public class Arrow {
 
 			// the distance between tip and tail
 			double carpan = iterasyonIndeksineOranla(okUzunluguBaslangici, okUzunluguBitisi, false);
-			//System.out.println("nasil:"+carpan);
-			double okUzunlugu = carpan * (Hs[d] - Ls[d]);						
+			// System.out.println("nasil:"+carpan);
+			double okUzunlugu = carpan * (Hs[d] - Ls[d]);
 			bitisIcinDelta = okUzunlugu * birimVektor[d];
 
 			// if it exceeds the border, pull it into the safe area
 			double yeniKonum = members[d][m] + bitisIcinDelta;
-			if (yeniKonum > Hs[d] || yeniKonum < Ls[d]) {				
+			if (yeniKonum > Hs[d] || yeniKonum < Ls[d]) {
 				yeniKonum = members[d][m] - bitisIcinDelta;
 			}
 			members[d][m + 1] = yeniKonum;
@@ -209,7 +219,12 @@ public class Arrow {
 		if (artarak_mi == true)
 			giden = baslangic + (bitis - baslangic) * ((double) (iterationIndex + 1) / maximumIterationNumber);
 		else
-			giden = baslangic - (baslangic - bitis) * ((double) (iterationIndex + 1) / maximumIterationNumber);//(1 - ((double) (iterationIndex + 1) / maximumIterationNumber));
+			giden = baslangic - (baslangic - bitis) * ((double) (iterationIndex + 1) / maximumIterationNumber);// (1 -
+																												// ((double)
+																												// (iterationIndex
+																												// + 1)
+																												// /
+																												// maximumIterationNumber));
 
 		return giden;
 	}
@@ -224,10 +239,18 @@ public class Arrow {
 			if (m != bestMemberID && (m + 1) != bestMemberID) { // en iyi uyeye dokunma
 				if (memberFitness[m] >= memberFitness[m + 1] && yon[m / 2] != true) // yon degismis tekrar dagit
 				{
+					for (int d = 0; d < problemDimension; d++) {
+						temp[d] = members[d][m+1];
+					}
+					iuListesi.bunuKabulEderMisin(memberFitness[m+1], temp);
 					okDagit(m, 1);
 				}
 				if (memberFitness[m] < memberFitness[m + 1] && yon[m / 2] != false) // bu da yon degistirmis
 				{
+					for (int d = 0; d < problemDimension; d++) {
+						temp[d] = members[d][m];
+					}
+					iuListesi.bunuKabulEderMisin(memberFitness[m], temp);
 					okDagit(m, 1);
 				}
 			}
