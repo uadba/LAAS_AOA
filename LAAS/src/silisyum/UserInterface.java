@@ -259,6 +259,11 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 	private int y1;
 	private int x2;
 	private int y2;
+	
+	private int b1;
+	private int c1;
+	private int b2;
+	private int c2;
 
 	/**
 	 * Launch the application.
@@ -2502,8 +2507,8 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 //		antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed,
 //		positionIsUsed);
 		
-		double okUzunluguBaslangici = 0.3;
-		double okUzunluguBitisi = 0.0001;
+		double okUzunluguBaslangici = 0.3; //0.3;
+		double okUzunluguBitisi = 0.0001; //0.0001;
 		algoritma = new Arrow(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, okUzunluguBaslangici, okUzunluguBitisi, L, H,
 				antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed, positionIsUsed);
 	}
@@ -2772,6 +2777,12 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 			y1 = (int) (algoritma.members[1][0] * en_boy);
 			x2 = (int) (algoritma.members[0][1] * en_boy);
 			y2 = (int) (algoritma.members[1][1] * en_boy);
+			
+			b1 = (int) (algoritma.members[0][2] * en_boy);
+			c1 = (int) (algoritma.members[1][2] * en_boy);
+			b2 = (int) (algoritma.members[0][3] * en_boy);
+			c2 = (int) (algoritma.members[1][3] * en_boy);
+			
 			repaint();
 		}
 	}
@@ -2791,6 +2802,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 
 		g.drawRect(1350, 450, en_boy, en_boy);
 		g.drawLine(1350 + x1, 450 + y1, 1350 + x2, 450 + y2);
+		g.drawLine(1350 + b1, 450 + c1, 1350 + b2, 450 + c2);
 
 		super.paint(g);
 
