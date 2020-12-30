@@ -30,7 +30,7 @@ public class Arrow {
 	Random r;
 	double[] birimVektor;
 	double bitisIcinDelta;
-	private IyiUyelerinListesi iuListesi;
+	// private IyiUyelerinListesi iuListesi;
 
 	public Arrow(int _numberofElements, int _populationNumber, int _maximumIterationNumber, double _F, double _Cr,
 			double _okUzunluguBaslangici, double _okUzunluguBitisi, double[] _L, double[] _H, AntennaArray _aA,
@@ -97,71 +97,40 @@ public class Arrow {
 			}
 		}
 
-		// Burada iyi uyelerin listesini olustur.
-		iuListesi = new IyiUyelerinListesi(50, problemDimension, populationNumber, Ls, Hs, cost);
-		iuListesi.listeyiDoldur();
-
 		for (int m = 0; m < populationNumber; m += 2) {
 
 			okDagit(m, 0);
 
-			/////////////////////////
-
 			// yonu belirle
-			if (memberFitness[m] >= memberFitness[m + 1]) // kuyruk buyukse "true"
+			if (memberFitness[m] >= memberFitness[m + 1]) // kuyruk buyukse "true" (yon dogru anlaminda)
 				yon[m / 2] = true;
 			else
 				yon[m / 2] = false;
 		}
-
-		// TEST farki belirlemek için TEST///////////////////////
-//		double fark;
-//		double ghipo;
-//		for (int pm = 0; pm < populationNumber; pm += 2) {
-//			ghipo=0;
-//			for (int d = 0; d < problemDimension; d++) {
-//				fark = members[d][pm] - members[d][pm+1];
-//				double okUzunlugu = okUzunluguOrani*(Hs[d] - Ls[d]);
-//				fark = fark/okUzunlugu;
-//				ghipo += fark * fark;
-//			}
-//			ghipo = Math.sqrt(ghipo);
-//			//System.out.println(ghipo);
-//		}		
-		// TEST --------------------- TEST///////////////////////
 	}
 
 	private void okDagit(int m, int hangiAsama) {
 
 		// baslangiclarin atanmasi
 		if (hangiAsama == 0) {
-			temp = iuListesi.rasgeleBirUyeSec();
 			for (int d = 0; d < problemDimension; d++) {
-				//members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
-				//temp[d] = members[d][m];
+				members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
+				temp[d] = members[d][m];
 				members[d][m] = temp[d];
 			}
 		} else {
 			double rasgele = Math.random();
 			double eniyiDegeriSecmeOlasiligi = iterasyonIndeksineOranla(0, 1, true);
-//			if (iterationIndex < 14 || iterationIndex > maximumIterationNumber - 14)
-//				System.out.println(iterasyonIndeksineOranla(1, false));
-//			System.out.println(eniyiDegeriSecmeOlasiligi);
 			if (rasgele < eniyiDegeriSecmeOlasiligi) {
 				for (int d = 0; d < problemDimension; d++) {
 					members[d][m] = members[d][bestMemberID];
 					temp[d] = members[d][m];
 				}
 			} else {
-				temp = iuListesi.rasgeleBirUyeSec();
 				for (int d = 0; d < problemDimension; d++) {
-					members[d][m] = temp[d];
+					members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
+					temp[d] = members[d][m];
 				}
-				
-				// for (int d = 0; d < problemDimension; d++) {
-				// members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
-				// temp[d] = members[d][m];
-				// }
 			}
 
 		}
@@ -219,16 +188,10 @@ public class Arrow {
 		if (artarak_mi == true)
 			giden = baslangic + (bitis - baslangic) * ((double) (iterationIndex + 1) / maximumIterationNumber);
 		else
-			giden = baslangic - (baslangic - bitis) * ((double) (iterationIndex + 1) / maximumIterationNumber);// (1 -
-																												// ((double)
-																												// (iterationIndex
-																												// + 1)
-																												// /
-																												// maximumIterationNumber));
-
+			giden = baslangic - (baslangic - bitis) * ((double) (iterationIndex + 1) / maximumIterationNumber);
 		return giden;
 	}
-
+	
 	public boolean iterate() {
 
 		// Buraya iteratif algoritmayi yazacaksin.
@@ -240,9 +203,8 @@ public class Arrow {
 				if (memberFitness[m] >= memberFitness[m + 1] && yon[m / 2] != true) // yon degismis tekrar dagit
 				{
 					for (int d = 0; d < problemDimension; d++) {
-						temp[d] = members[d][m+1];
+						temp[d] = members[d][m + 1];
 					}
-					iuListesi.bunuKabulEderMisin(memberFitness[m+1], temp);
 					okDagit(m, 1);
 				}
 				if (memberFitness[m] < memberFitness[m + 1] && yon[m / 2] != false) // bu da yon degistirmis
@@ -250,7 +212,6 @@ public class Arrow {
 					for (int d = 0; d < problemDimension; d++) {
 						temp[d] = members[d][m];
 					}
-					iuListesi.bunuKabulEderMisin(memberFitness[m], temp);
 					okDagit(m, 1);
 				}
 			}

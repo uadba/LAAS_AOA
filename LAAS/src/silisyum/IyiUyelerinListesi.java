@@ -50,7 +50,7 @@ public class IyiUyelerinListesi {
 		enleriTespitEt();
 		
 		// bu belki kalkabilir
-		for (int kez = 0; kez < 10; kez++) {
+		for (int kez = 0; kez < 20000; kez++) {
 			for (int d = 0; d < problemDimension; d++) {
 				temp[d] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
 			}
