@@ -122,7 +122,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 	private AntennaArray antennaArrayForPresentation;
 
 	// Yeni algoritmalar buraya eklenebilir -------------
-	//private DifferentialEvolution algoritma;
+	// private DifferentialEvolution algoritma;
 	private Arrow algoritma;
 	// ---------------------------------------------------
 
@@ -259,11 +259,13 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 	private int y1;
 	private int x2;
 	private int y2;
-	
+
 	private int b1;
 	private int c1;
 	private int b2;
 	private int c2;
+	private JButton btn10Times;
+	private int kacKerre = 0;
 
 	/**
 	 * Launch the application.
@@ -555,6 +557,9 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 		startPauseButton = new JButton("Start Optimization");
 		startPauseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				kacKerre = 1;
+				
 				if (validateParameters()) {
 					if (algorithmExecuter.keepIterating == false) {
 						if (algorithmExecuter.newStart) {
@@ -620,6 +625,73 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 			}
 		});
 		btnShowCurrentResults.setVisible(false);
+
+		btn10Times = new JButton("10 Times");
+		btn10Times.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				// ******************
+				int buKadar = 30;
+				if(kacKerre == 0) kacKerre = buKadar;
+				
+				if (validateParameters()) {
+					if (algorithmExecuter.keepIterating == false) {
+						if (algorithmExecuter.newStart) {
+							getParametersFromUserInterface();
+							calculateProblemDimension();
+							createMainObjects();
+							seriler.clear();
+							maskOuter.clear();
+							maskInner.clear();
+							convergenceSeries.clear();
+							unplottedIterationIndexBeginning = 0;
+							algorithmExecuter.newStart = false;
+							algorithmExecuter.iterationHasNotCompletedYet = true;
+							sendMessageToPane(
+									"<font color=#006400><b>Optimization process has been <i>started</i> successfully!</b></font>",
+									true);
+							if (isThereAnyGapInOuterMask()) {
+								sendMessageToPane(
+										"<br><font color=#666600>Warning: There is at least one gap in the <i>outer mask</i>. It does not affect the optimization process adversely but it may be the sign of a bad designed mask.</font>",
+										false);
+							}
+							if (isThereAnyGapInInnerMask()) {
+								sendMessageToPane(
+										"<br><font color=#666600>Warning: There is at least one gap in the <i>inner mask</i>. It does not affect the optimization process adversely but it may be the sign of a bad designed mask.</font>",
+										false);
+							}
+							makeComponentsEnable(false);
+						} else {
+							sendMessageToPane(
+									"<br><font color=#006400><b>Optimization process has been <i>restarted</i>.</b></font>",
+									false);
+						}
+						algorithmExecuter.keepIterating = true;
+						startPauseButton.setText("Pause Optimization");
+						terminateOptimizationButton.setVisible(false);
+						btnShowCurrentResults.setVisible(false);
+						drawOuterMask();
+						drawInnerMask();
+						firstOrLastPlot = true;
+						startTimeForPatternGraph = System.currentTimeMillis();
+						startTimeForConvergenceGraph = System.currentTimeMillis();
+					} else {
+						algorithmExecuter.keepIterating = false;
+						startPauseButton.setText("Continue Optimization");
+						terminateOptimizationButton.setVisible(true);
+						btnShowCurrentResults.setVisible(true);
+						sendMessageToPane(
+								"<br><font color=#006400><b>Optimization process has been <i>stopped</i>.</b></font>",
+								false);
+					}
+				} else {
+					presentErrorMessages();
+					tabbedPaneForSettings.setSelectedIndex(4);
+				}	
+
+			}
+		});
+		startStopPanel.add(btn10Times, "cell 1 0,alignx center");
 		btnShowCurrentResults.setForeground(new Color(255, 255, 255));
 		btnShowCurrentResults.setBackground(new Color(51, 153, 255));
 		startStopPanel.add(btnShowCurrentResults, "cell 0 1,alignx center");
@@ -1684,14 +1756,15 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 
 		comboBoxNumberOfPoints.setSelectedIndex(1); // This is here because it triggers addActionListener which runs
 													// algorithmExecuter
-		
+
 		// burayi sil -------------------------------------------------++++++++++++++
-		//File file = fc.getSelectedFile();
+		// File file = fc.getSelectedFile();
 
 		CurrentConfiguration cc = null;
 
 		try {
-			FileInputStream fileIn = new FileInputStream("C:\\Users\\Suad\\Documents\\A_Config_Files_of_LAAS\\Wide_Null.aas");
+			FileInputStream fileIn = new FileInputStream(
+					"C:\\Users\\Suad\\Documents\\A_Config_Files_of_LAAS\\Wide_Null.aas");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			cc = (CurrentConfiguration) in.readObject();
 			in.close();
@@ -1729,9 +1802,8 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 			mask.outerMaskSegments.clear();
 			int numberOfOuterMask = cc.nameForOuter.length;
 			for (int s = 0; s < numberOfOuterMask; s++) {
-				mask.addNewOuterMaskSegments(cc.nameForOuter[s], cc.startAngleForOuter[s],
-						cc.stopAngleForOuter[s], cc.numberOfPointsForOuter[s], cc.levelForOuter[s],
-						cc.weightForOuter[s]);
+				mask.addNewOuterMaskSegments(cc.nameForOuter[s], cc.startAngleForOuter[s], cc.stopAngleForOuter[s],
+						cc.numberOfPointsForOuter[s], cc.levelForOuter[s], cc.weightForOuter[s]);
 			}
 			refreshOuterMaskSegmentsList();
 			refreshOuterMaskSegmentDetailsTable();
@@ -1741,9 +1813,8 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 			mask.innerMaskSegments.clear();
 			int numberOfInnerMask = cc.nameForInner.length;
 			for (int s = 0; s < numberOfInnerMask; s++) {
-				mask.addNewInnerMaskSegments(cc.nameForInner[s], cc.startAngleForInner[s],
-						cc.stopAngleForInner[s], cc.numberOfPointsForInner[s], cc.levelForInner[s],
-						cc.weightForInner[s]);
+				mask.addNewInnerMaskSegments(cc.nameForInner[s], cc.startAngleForInner[s], cc.stopAngleForInner[s],
+						cc.numberOfPointsForInner[s], cc.levelForInner[s], cc.weightForInner[s]);
 			}
 			refreshInnerMaskSegmentsList();
 			refreshInnerMaskSegmentDetailsTable();
@@ -2506,11 +2577,12 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 //		maximumIterationNumber, F, Cr, L, H, antennaArray,
 //		antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed,
 //		positionIsUsed);
-		
-		double okUzunluguBaslangici = 0.3; //0.3;
-		double okUzunluguBitisi = 0.0001; //0.0001;
-		algoritma = new Arrow(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, okUzunluguBaslangici, okUzunluguBitisi, L, H,
-				antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed, positionIsUsed);
+
+		double okUzunluguBaslangici = 0.3; // 0.3;
+		double okUzunluguBitisi = 0.0001; // 0.0001;
+		algoritma = new Arrow(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, okUzunluguBaslangici,
+				okUzunluguBitisi, L, H, antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed,
+				positionIsUsed);
 	}
 
 	private void preserveAspectRatio(JPanel innerPanel, JPanel container) {
@@ -2721,7 +2793,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 					iterationHasNotCompletedYet = algoritma.iterate();
 					double[] valuesOfBestMember = new double[problemDimension];
 					for (int d = 0; d < problemDimension; d++) {
-						valuesOfBestMember[d] = algoritma.members[d][algoritma.bestMemberID];						
+						valuesOfBestMember[d] = algoritma.members[d][algoritma.bestMemberID];
 					}
 					if (iterationHasNotCompletedYet == false)
 						firstOrLastPlot = true;
@@ -2734,7 +2806,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 		@Override
 		protected void process(List<BestValues> chunks) {
 			bestValues = chunks.get(chunks.size() - 1);
-			//System.out.println(bestValues.valuesOfBestMember[0]);
+			// System.out.println(bestValues.valuesOfBestMember[0]);
 			int progress = (int) (100 * algoritma.iterationIndex / algoritma.maximumIterationNumber);
 			progressBar.setValue(progress);
 			if (iterationHasNotCompletedYet == false) {
@@ -2750,6 +2822,11 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 
 				// Set the best results as the current value to the current antenna array
 				setBestResultsToCurrentAntennaArray();
+				
+				System.out.println(bestValues.bestCostValue);
+				kacKerre--;
+				//System.out.println("kackerre:"+kacKerre);
+				if (kacKerre != 0) btn10Times.doClick();
 			}
 
 			double currentTime = System.currentTimeMillis();
@@ -2777,12 +2854,12 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 			y1 = (int) (algoritma.members[1][0] * en_boy);
 			x2 = (int) (algoritma.members[0][1] * en_boy);
 			y2 = (int) (algoritma.members[1][1] * en_boy);
-			
+
 			b1 = (int) (algoritma.members[0][2] * en_boy);
 			c1 = (int) (algoritma.members[1][2] * en_boy);
 			b2 = (int) (algoritma.members[0][3] * en_boy);
 			c2 = (int) (algoritma.members[1][3] * en_boy);
-			
+
 			repaint();
 		}
 	}

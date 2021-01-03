@@ -106,6 +106,7 @@ public class Arrow {
 				yon[m / 2] = true;
 			else
 				yon[m / 2] = false;
+
 		}
 	}
 
@@ -146,7 +147,7 @@ public class Arrow {
 
 		// bitislerin atanmasi
 		// Oncelikle rasgele bir yon belirleme islemi gerceklestirilmeli
-		// Bunun için 1 ve -1 deðerleri arasýnda "d" adet rasgele deðer üretilmeli
+		// Bunun icin 1 ve -1 degerleri arasinda "d" adet rasgele deger uretilmeli
 		double hipotenus = 0;
 		for (int d = 0; d < problemDimension; d++) {
 			birimVektor[d] = Math.random() * 2 - 1;
@@ -158,7 +159,6 @@ public class Arrow {
 
 			// the distance between tip and tail
 			double carpan = iterasyonIndeksineOranla(okUzunluguBaslangici, okUzunluguBitisi, false);
-			// System.out.println("nasil:"+carpan);
 			double okUzunlugu = carpan * (Hs[d] - Ls[d]);
 			bitisIcinDelta = okUzunlugu * birimVektor[d];
 
@@ -191,7 +191,7 @@ public class Arrow {
 			giden = baslangic - (baslangic - bitis) * ((double) (iterationIndex + 1) / maximumIterationNumber);
 		return giden;
 	}
-	
+
 	public boolean iterate() {
 
 		// Buraya iteratif algoritmayi yazacaksin.
@@ -206,6 +206,12 @@ public class Arrow {
 						temp[d] = members[d][m + 1];
 					}
 					okDagit(m, 1);
+					
+					// yonu belirle
+//					if (memberFitness[m] >= memberFitness[m + 1]) // kuyruk buyukse "true" (yon dogru anlaminda)
+//						yon[m / 2] = true;
+//					else
+//						yon[m / 2] = false;
 				}
 				if (memberFitness[m] < memberFitness[m + 1] && yon[m / 2] != false) // bu da yon degistirmis
 				{
@@ -213,6 +219,12 @@ public class Arrow {
 						temp[d] = members[d][m];
 					}
 					okDagit(m, 1);
+					
+					// yonu belirle
+//					if (memberFitness[m] >= memberFitness[m + 1]) // kuyruk buyukse "true" (yon dogru anlaminda)
+//						yon[m / 2] = true;
+//					else
+//						yon[m / 2] = false;
 				}
 			}
 
@@ -242,7 +254,7 @@ public class Arrow {
 					fitnessOfBestMember = memberFitness[m + 1];
 				}
 
-			} else {
+			} else { // burada ok geri geri gidiyor.
 				for (int d = 0; d < problemDimension; d++) {
 					yedege_al_mem = members[d][m];
 					test_mem = members[d][m] + (members[d][m] - members[d][m + 1]);
