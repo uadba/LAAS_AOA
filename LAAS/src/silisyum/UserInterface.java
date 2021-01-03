@@ -631,7 +631,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 			public void actionPerformed(ActionEvent e) {
 
 				// ******************
-				int buKadar = 30;
+				int buKadar = 10;
 				if(kacKerre == 0) kacKerre = buKadar;
 				
 				if (validateParameters()) {
