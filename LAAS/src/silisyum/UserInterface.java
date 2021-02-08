@@ -2705,8 +2705,8 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 		// g.setColor(Color.black);
 		// g.drawOval(x, y, d, d);
 
-		g.drawRect(1350, 450, en_boy, en_boy);
-		g.drawLine(1350 + x1, 450 + y1, 1350 + x2, 450 + y2);
+		g.drawRect(1000, 400, en_boy, en_boy);
+		g.drawLine(1000 + x1, 400 + y1, 1000 + x2, 400 + y2);
 
 		super.paint(g);
 
