@@ -2854,7 +2854,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 			}
 
 			double elapsedTimeForUyeleriGoruntule = currentTime - startTimeForUyeleriGoruntule;
-			if (elapsedTimeForUyeleriGoruntule > 10) {
+			if (elapsedTimeForUyeleriGoruntule > 5000) {
 				startTimeForUyeleriGoruntule = currentTime;
 
 				// Here I can draw two dimensional values on a panel.
@@ -2864,7 +2864,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 //					uc[m] = (int) (algoritma.members[0][m + 1] * en_boy);
 //					uc[m + 1] = (int) (algoritma.members[1][m + 1] * en_boy);
 //				}
-
+				
 			}
 
 			x1 = (int) (algoritma.members[0][0] * en_boy);
