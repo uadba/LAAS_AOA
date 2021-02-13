@@ -122,8 +122,8 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 	private AntennaArray antennaArrayForPresentation;
 
 	// Yeni algoritmalar buraya eklenebilir -------------
-	// private DifferentialEvolution algoritma;
-	private Arrow algoritma;
+	private DifferentialEvolution algoritma;
+	// private Arrow algoritma;
 	// ---------------------------------------------------
 
 	private BestValues bestValues;
@@ -217,6 +217,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 	private JButton btnLoadPositions;
 	private double startTimeForPatternGraph;
 	private double startTimeForConvergenceGraph;
+	private double startTimeForUyeleriGoruntule;
 	private int periodForPatternGraph = 0;
 	private int periodForConvergenceGraph = 0;
 	private JComboBox<String> comboBoxForPatternGraph;
@@ -255,15 +256,13 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 	private Component verticalStrut_1;
 
 	private int en_boy = 400;
+	private int[] kuyruk;
+	private int[] uc;
 	private int x1;
 	private int y1;
 	private int x2;
 	private int y2;
 
-	private int b1;
-	private int c1;
-	private int b2;
-	private int c2;
 	private JButton btn10Times;
 	private int kacKerre = 0;
 
@@ -557,9 +556,9 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 		startPauseButton = new JButton("Start Optimization");
 		startPauseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				kacKerre = 1;
-				
+
 				if (validateParameters()) {
 					if (algorithmExecuter.keepIterating == false) {
 						if (algorithmExecuter.newStart) {
@@ -601,6 +600,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 						firstOrLastPlot = true;
 						startTimeForPatternGraph = System.currentTimeMillis();
 						startTimeForConvergenceGraph = System.currentTimeMillis();
+						startTimeForUyeleriGoruntule = System.currentTimeMillis();
 					} else {
 						algorithmExecuter.keepIterating = false;
 						startPauseButton.setText("Continue Optimization");
@@ -632,8 +632,9 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 
 				// ******************
 				int buKadar = 10;
-				if(kacKerre == 0) kacKerre = buKadar;
-				
+				if (kacKerre == 0)
+					kacKerre = buKadar;
+
 				if (validateParameters()) {
 					if (algorithmExecuter.keepIterating == false) {
 						if (algorithmExecuter.newStart) {
@@ -675,6 +676,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 						firstOrLastPlot = true;
 						startTimeForPatternGraph = System.currentTimeMillis();
 						startTimeForConvergenceGraph = System.currentTimeMillis();
+						startTimeForUyeleriGoruntule = System.currentTimeMillis();
 					} else {
 						algorithmExecuter.keepIterating = false;
 						startPauseButton.setText("Continue Optimization");
@@ -687,7 +689,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 				} else {
 					presentErrorMessages();
 					tabbedPaneForSettings.setSelectedIndex(4);
-				}	
+				}
 
 			}
 		});
@@ -2573,16 +2575,17 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 
 	private void createMainObjects() {
 
-//		algoritma = new DifferentialEvolution(numberOfElements, populationNumber,
-//		maximumIterationNumber, F, Cr, L, H, antennaArray,
-//		antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed,
-//		positionIsUsed);
+		kuyruk = new int[populationNumber];
+		uc = new int[populationNumber];
 
-		double okUzunluguBaslangici = 0.3; // 0.3;
-		double okUzunluguBitisi = 0.0001; // 0.0001;
-		algoritma = new Arrow(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, okUzunluguBaslangici,
-				okUzunluguBitisi, L, H, antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed,
-				positionIsUsed);
+		algoritma = new DifferentialEvolution(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, L, H,
+				antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed, positionIsUsed);
+
+//		double okUzunluguBaslangici = 0.3; // 0.3;
+//		double okUzunluguBitisi = 0.0001; // 0.0001;
+//		algoritma = new Arrow(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, okUzunluguBaslangici,
+//				okUzunluguBitisi, L, H, antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed,
+//				positionIsUsed);
 	}
 
 	private void preserveAspectRatio(JPanel innerPanel, JPanel container) {
@@ -2822,11 +2825,12 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 
 				// Set the best results as the current value to the current antenna array
 				setBestResultsToCurrentAntennaArray();
-				
+
 				System.out.println(bestValues.bestCostValue);
 				kacKerre--;
-				//System.out.println("kackerre:"+kacKerre);
-				if (kacKerre != 0) btn10Times.doClick();
+				// System.out.println("kackerre:"+kacKerre);
+				if (kacKerre != 0)
+					btn10Times.doClick();
 			}
 
 			double currentTime = System.currentTimeMillis();
@@ -2849,39 +2853,42 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 				}
 			}
 
-			// Here I can draw two dimensional values on a panel.
+			double elapsedTimeForUyeleriGoruntule = currentTime - startTimeForUyeleriGoruntule;
+			if (elapsedTimeForUyeleriGoruntule > 10) {
+				startTimeForUyeleriGoruntule = currentTime;
+
+				// Here I can draw two dimensional values on a panel.
+//				for (int m = 0; m < populationNumber; m += 2) {
+//					kuyruk[m] = (int) (algoritma.members[0][m] * en_boy);
+//					kuyruk[m + 1] = (int) (algoritma.members[1][m] * en_boy);
+//					uc[m] = (int) (algoritma.members[0][m + 1] * en_boy);
+//					uc[m + 1] = (int) (algoritma.members[1][m + 1] * en_boy);
+//				}
+
+			}
+
 			x1 = (int) (algoritma.members[0][0] * en_boy);
 			y1 = (int) (algoritma.members[1][0] * en_boy);
 			x2 = (int) (algoritma.members[0][1] * en_boy);
 			y2 = (int) (algoritma.members[1][1] * en_boy);
 
-			b1 = (int) (algoritma.members[0][2] * en_boy);
-			c1 = (int) (algoritma.members[1][2] * en_boy);
-			b2 = (int) (algoritma.members[0][3] * en_boy);
-			c2 = (int) (algoritma.members[1][3] * en_boy);
-
 			repaint();
+
 		}
 	}
 
 	@Override
 	public void paint(Graphics g) {
 
-		// Dynamically calculate size information
-		// Dimension size = getSize(); // diameter
-		// int d = Math.min(size.width, size.height);
-		// int x = (size.width - d) / 2;
-		// int y = (size.height - d) / 2;
-		// draw circle (color already set to foreground)
-		// g.fillOval(x, y, d, d);
-		// g.setColor(Color.black);
-		// g.drawOval(x, y, d, d);
-
-		g.drawRect(1000, 400, en_boy, en_boy);
-		g.drawLine(1000 + x1, 400 + y1, 1000 + x2, 400 + y2);
 		g.drawRect(1350, 450, en_boy, en_boy);
+
+		// for (int m = 0; m < populationNumber; m += 2) {
+//		for (int m = 0; m < 2; m += 2) {
+		// g.drawLine(1350 + kuyruk[m], 450 + kuyruk[m + 1], 1350 + uc[m], 450 + uc[m +
+		// 1]);
+//		}
+
 		g.drawLine(1350 + x1, 450 + y1, 1350 + x2, 450 + y2);
-		g.drawLine(1350 + b1, 450 + c1, 1350 + b2, 450 + c2);
 
 		super.paint(g);
 
