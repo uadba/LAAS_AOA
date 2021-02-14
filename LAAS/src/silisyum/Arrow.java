@@ -13,8 +13,8 @@ public class Arrow {
 	public int bestMemberID = -1;
 	public double fitnessOfBestMember = 0;
 	public int maximumIterationNumber;
-	private double okUzunluguBaslangici;
-	private double okUzunluguBitisi;
+	// private double okUzunluguBaslangici;
+	// private double okUzunluguBitisi;
 	public int iterationIndex = 0;
 	private double[] L;
 	private double[] H;
@@ -26,7 +26,8 @@ public class Arrow {
 	private Cost cost;
 	private boolean iterationState = true;
 	public double[] costValues;
-	public boolean[] yon; // "true" ise buyuk olan indekse dogru
+	public boolean[] istikamet; // "true" ise buyuk olan indekse dogru
+	public int[] rasgeleYonSayaci;
 	Random r;
 	double[] birimVektor;
 	double bitisIcinDelta;
@@ -39,8 +40,8 @@ public class Arrow {
 		numberofElements = _numberofElements;
 		populationNumber = _populationNumber;
 		maximumIterationNumber = _maximumIterationNumber;
-		okUzunluguBaslangici = _okUzunluguBaslangici;
-		okUzunluguBitisi = _okUzunluguBitisi;
+		// okUzunluguBaslangici = _okUzunluguBaslangici;
+		// okUzunluguBitisi = _okUzunluguBitisi;
 		L = _L;
 		H = _H;
 		amplitudeIsUsed = _amplitudeIsUsed;
@@ -66,7 +67,8 @@ public class Arrow {
 		temp = new double[problemDimension];
 		Ls = new double[problemDimension];
 		Hs = new double[problemDimension];
-		yon = new boolean[populationNumber / 2];
+		istikamet = new boolean[populationNumber / 2];
+		rasgeleYonSayaci = new int[populationNumber / 2];
 		r = new Random();
 		birimVektor = new double[problemDimension];
 	}
@@ -113,7 +115,10 @@ public class Arrow {
 		okunUcunuBelirle(m);
 
 		// Ok ne tarafa dogru?
-		okunYonunuBelirle(m);
+		okunYonunuDuzelt(m);
+
+		istikamet[m / 2] = true;
+		rasgeleYonSayaci[m / 2] = 0;
 	}
 
 	private void okunKuyrugunuBelirle(int m) {
@@ -140,10 +145,10 @@ public class Arrow {
 			birimVektor[d] = birimVektor[d] / hipotenus;
 
 			// the distance between tip and tail
-			double carpan = 0.2; // iterasyonIndeksineOranla(okUzunluguBaslangici, okUzunluguBitisi, false);
+			double carpan = 0.05; // iterasyonIndeksineOranla(okUzunluguBaslangici, okUzunluguBitisi, false);
 			double okUzunlugu = carpan * (Hs[d] - Ls[d]);
 			bitisIcinDelta = okUzunlugu * birimVektor[d];
-			
+
 			// if it exceeds the border, pull it into the safe area
 			double yeniKonum = members[d][m] + bitisIcinDelta;
 			if (yeniKonum > Hs[d] || yeniKonum < Ls[d]) {
@@ -160,19 +165,20 @@ public class Arrow {
 		}
 	}
 
-	private void okunYonunuBelirle(int m) {
-		if (memberFitness[m] < memberFitness[m + 1])
-		{
-			double temp; // genel
-			temp = memberFitness[m];
+	private void okunYonunuDuzelt(int m) {
+		if (memberFitness[m] < memberFitness[m + 1]) {
+			if (m == bestMemberID)
+				bestMemberID = m + 1;
+			double yedek; // genel
+			yedek = memberFitness[m];
 			memberFitness[m] = memberFitness[m + 1];
-			memberFitness[m+1] = temp;
-			
+			memberFitness[m + 1] = yedek;
+
 			for (int d = 0; d < problemDimension; d++) {
-				temp = members[d][m];
+				yedek = members[d][m];
 				members[d][m] = members[d][m + 1];
-				members[d][m+1] = temp;
-			}			
+				members[d][m + 1] = yedek;
+			}
 		}
 	}
 
@@ -180,11 +186,67 @@ public class Arrow {
 
 		// Buraya iteratif algoritmayi yazacaksin.
 		// _______________________________________
-
 		for (int m = 0; m < populationNumber; m += 2) {
+			if (istikamet[m / 2] == true) {
+				for (int d = 0; d < problemDimension; d++) {
+					temp[d] = members[d][m + 1] + (members[d][m + 1] - members[d][m]);
+					if (temp[d] > Hs[d] || temp[d] < Ls[d]) {
+						temp[d] = members[d][m + 1] - (members[d][m + 1] - members[d][m]);
+					}
+				}
 
-			ilkDagitimiYap(m);
+				double testMaliyet = cost.function(temp);
+				if (testMaliyet < memberFitness[m + 1]) // yeni konumun degeri daha iyi ise
+				{
+					double yedek; // genel
+					yedek = memberFitness[m + 1];
+					memberFitness[m + 1] = testMaliyet;
+					memberFitness[m] = yedek;
 
+					for (int d = 0; d < problemDimension; d++) {
+						yedek = members[d][m + 1];
+						members[d][m + 1] = temp[d];
+						members[d][m] = yedek;
+					}
+
+					if (memberFitness[m + 1] < fitnessOfBestMember) {
+						bestMemberID = m + 1;
+						fitnessOfBestMember = memberFitness[m + 1];
+					}
+				} else // yeni konumun degeri daha iyi DEGIL ise
+				{
+					memberFitness[m] = memberFitness[m + 1];
+					for (int d = 0; d < problemDimension; d++) {
+						members[d][m] = members[d][m + 1];
+					}
+
+					if (m + 1 == bestMemberID) {
+						bestMemberID = m;
+					}
+
+					istikamet[m / 2] = false;
+				}
+			} else {
+				int tahammulSiniri = 7;
+				if(rasgeleYonSayaci[m/2] > tahammulSiniri)
+				{
+					//okunKuyrugunuBelirle(m);
+					for (int d = 0; d < problemDimension; d++) {
+						members[d][m] = members[d][bestMemberID];
+					}
+					memberFitness[m] = fitnessOfBestMember;
+					rasgeleYonSayaci[m/2] = 0;
+				}
+				
+				// Okun ucu
+				okunUcunuBelirle(m);
+
+				// Ok ne tarafa dogru?
+				okunYonunuDuzelt(m);
+
+				istikamet[m / 2] = true;
+				rasgeleYonSayaci[m / 2]++;
+			}
 		}
 
 		// _______________________________________
