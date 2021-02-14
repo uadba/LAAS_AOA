@@ -256,8 +256,6 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 	private Component verticalStrut_1;
 
 	private int en_boy = 400;
-	private int[] kuyruk;
-	private int[] uc;
 	private int x1;
 	private int y1;
 	private int x2;
@@ -2575,9 +2573,6 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 
 	private void createMainObjects() {
 
-		kuyruk = new int[populationNumber];
-		uc = new int[populationNumber];
-
 		algoritma = new DifferentialEvolution(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, L, H,
 				antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed, positionIsUsed);
 
@@ -2867,11 +2862,11 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 				
 			}
 
-			x1 = (int) (algoritma.members[0][0] * en_boy);
-			y1 = (int) (algoritma.members[1][0] * en_boy);
-			x2 = (int) (algoritma.members[0][1] * en_boy);
-			y2 = (int) (algoritma.members[1][1] * en_boy);
-
+			x1 = (int) (algoritma.members[2][0] * en_boy);
+			y1 = (int) (algoritma.members[3][0] * en_boy);
+			x2 = (int) (algoritma.members[2][1] * en_boy);
+			y2 = (int) (algoritma.members[3][1] * en_boy);
+			
 			repaint();
 
 		}
