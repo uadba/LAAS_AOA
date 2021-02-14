@@ -13,8 +13,8 @@ public class Arrow {
 	public int bestMemberID = -1;
 	public double fitnessOfBestMember = 0;
 	public int maximumIterationNumber;
-	// private double okUzunluguBaslangici;
-	// private double okUzunluguBitisi;
+	private double okUzunluguBaslangici;
+	private double okUzunluguBitisi;
 	public int iterationIndex = 0;
 	private double[] L;
 	private double[] H;
@@ -40,8 +40,8 @@ public class Arrow {
 		numberofElements = _numberofElements;
 		populationNumber = _populationNumber;
 		maximumIterationNumber = _maximumIterationNumber;
-		// okUzunluguBaslangici = _okUzunluguBaslangici;
-		// okUzunluguBitisi = _okUzunluguBitisi;
+		okUzunluguBaslangici = _okUzunluguBaslangici;
+		okUzunluguBitisi = _okUzunluguBitisi;
 		L = _L;
 		H = _H;
 		amplitudeIsUsed = _amplitudeIsUsed;
@@ -145,7 +145,8 @@ public class Arrow {
 			birimVektor[d] = birimVektor[d] / hipotenus;
 
 			// the distance between tip and tail
-			double carpan = 0.05; // iterasyonIndeksineOranla(okUzunluguBaslangici, okUzunluguBitisi, false);
+			double carpan = iterasyonIndeksineOranla(okUzunluguBaslangici, okUzunluguBitisi, false);
+			//if(m==0 && d==0) System.out.println(carpan);
 			double okUzunlugu = carpan * (Hs[d] - Ls[d]);
 			bitisIcinDelta = okUzunlugu * birimVektor[d];
 
@@ -227,7 +228,7 @@ public class Arrow {
 					istikamet[m / 2] = false;
 				}
 			} else {
-				int tahammulSiniri = 7;
+				int tahammulSiniri = 300;
 				if(rasgeleYonSayaci[m/2] > tahammulSiniri)
 				{
 					//okunKuyrugunuBelirle(m);
@@ -237,7 +238,7 @@ public class Arrow {
 					memberFitness[m] = fitnessOfBestMember;
 					rasgeleYonSayaci[m/2] = 0;
 				}
-				
+
 				// Okun ucu
 				okunUcunuBelirle(m);
 
@@ -258,6 +259,21 @@ public class Arrow {
 			iterationState = false;
 
 		return iterationState;
+	}
+
+	private double iterasyonIndeksineOranla(double baslangic, double bitis, boolean artarak_mi) {
+		double giden;
+
+		if (artarak_mi == true)
+			giden = baslangic + (bitis - baslangic) * ((double) (iterationIndex + 1) / maximumIterationNumber);
+		else
+			giden = baslangic - (baslangic - bitis) * ((double) (iterationIndex + 1) / maximumIterationNumber);
+		
+//		double f = (-(iterationIndex+1)+1000)*(0.9/1000);
+//		double g = Math.cos(((double)iterationIndex)/20);
+//		giden = Math.abs(f*g)+0.0001;
+		
+		return giden;
 	}
 
 }
