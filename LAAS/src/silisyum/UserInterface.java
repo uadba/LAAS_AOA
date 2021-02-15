@@ -122,8 +122,9 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 	private AntennaArray antennaArrayForPresentation;
 
 	// Yeni algoritmalar buraya eklenebilir -------------
-	///private DifferentialEvolution algoritma;
-	private Arrow algoritma;
+	//private DifferentialEvolution algoritma;
+	//private Arrow algoritma;
+	private ShrinkingRegion algoritma;
 	// ---------------------------------------------------
 
 	private BestValues bestValues;
@@ -2576,9 +2577,15 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 //		algoritma = new DifferentialEvolution(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, L, H,
 //				antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed, positionIsUsed);
 
+//		double okUzunluguBaslangici = 0.3; // 0.3;
+//		double okUzunluguBitisi = 0.0001; // 0.0001;
+//		algoritma = new Arrow(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, okUzunluguBaslangici,
+//				okUzunluguBitisi, L, H, antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed,
+//				positionIsUsed);
+		
 		double okUzunluguBaslangici = 0.3; // 0.3;
 		double okUzunluguBitisi = 0.0001; // 0.0001;
-		algoritma = new Arrow(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, okUzunluguBaslangici,
+		algoritma = new ShrinkingRegion(numberOfElements, populationNumber, maximumIterationNumber, F, Cr, okUzunluguBaslangici,
 				okUzunluguBitisi, L, H, antennaArray, antennaArrayForPresentation, mask, amplitudeIsUsed, phaseIsUsed,
 				positionIsUsed);
 	}
