@@ -1,5 +1,6 @@
 package silisyum;
 
+import java.util.Iterator;
 import java.util.Random;
 
 public class ShrinkingRegion {
@@ -107,19 +108,13 @@ public class ShrinkingRegion {
 		}
 
 		ilkDagitimiYap();
-
-		for (int m = 0; m < populationNumber; m++) {
-			System.out.println(memberFitness[m]);
-		}
-		System.out.println();
 		
 		iyileriListele();
 		
+		double enBuyukTersCost = 1/siraliMemberFitness[0];
 		for (int m = 0; m < halfOfPopulation; m++) {
-			System.out.println(siraliMemberFitness[m]);
+			System.out.println((1/siraliMemberFitness[m])/enBuyukTersCost);
 		}
-		
-		System.out.println("____________");
 
 	}
 
@@ -137,13 +132,7 @@ public class ShrinkingRegion {
 				fitnessOfBestMember = memberFitness[m];
 			}
 		}
-
-//		for (int m = 0; m < halfOfPopulation; m++) {
-//			siraliMemberFitness[m] = -1;			
-//		}
 		
-		
-
 	}
 
 	private void iyileriListele() { // tabi ki yarisini
@@ -166,10 +155,29 @@ public class ShrinkingRegion {
 		}
 	}
 
+	private void yeniJenerasyonunDagitiminiYap() {
+
+		for (int m = 0; m < populationNumber; m++) {
+			for (int d = 0; d < problemDimension; d++) {
+				members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
+				temp[d] = members[d][m];
+			}
+
+			memberFitness[m] = cost.function(temp);
+			if (memberFitness[m] < fitnessOfBestMember || bestMemberID == -1) {
+				bestMemberID = m;
+				fitnessOfBestMember = memberFitness[m];
+			}
+		}
+		
+	}
+	
 	public boolean iterate() {
 
 		// Buraya iteratif algoritmayi yazacaksin.
 		// _______________________________________
+		
+		
 
 		// _______________________________________
 
