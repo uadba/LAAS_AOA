@@ -118,6 +118,8 @@ public class ShrinkingRegion {
 		for (int m = 0; m < halfOfPopulation; m++) {
 			System.out.println(siraliMemberFitness[m]);
 		}
+		
+		System.out.println("____________");
 
 	}
 
@@ -147,18 +149,20 @@ public class ShrinkingRegion {
 	private void iyileriListele() { // tabi ki yarisini
 		for (int mOrdered = 0; mOrdered < halfOfPopulation; mOrdered++) {
 			double currentBestInPool = -1;
+			int currentBestIDInPool = 0;
 			for (int m = 0; m < populationNumber; m++) {
 				if (memberFitness[m] != -1) {
 					if (memberFitness[m] < currentBestInPool || currentBestInPool == -1) {
 						siraliMemberFitness[mOrdered] = memberFitness[m];
 						currentBestInPool = memberFitness[m];
+						currentBestIDInPool = m;
 						for (int d = 0; d < problemDimension; d++) {							
 							siraliMembers[d][mOrdered] = members[d][m];
-						}
-						memberFitness[m] = -1;
-					}					
+						}						
+					}				
 				}
 			}
+			memberFitness[currentBestIDInPool] = -1;
 		}
 	}
 
