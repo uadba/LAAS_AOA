@@ -7,8 +7,11 @@ public class ShrinkingRegion {
 	private int numberofElements;
 	private int problemDimension = 0;
 	private int populationNumber;
+	private int halfOfPopulation;
 	public double[][] members;
 	private double[] memberFitness;
+	public double[][] siraliMembers;
+	private double[] siraliMemberFitness;
 	private double[] temp;
 	public int bestMemberID = -1;
 	public double fitnessOfBestMember = 0;
@@ -33,12 +36,14 @@ public class ShrinkingRegion {
 	double bitisIcinDelta;
 	// private IyiUyelerinListesi iuListesi;
 
-	public ShrinkingRegion(int _numberofElements, int _populationNumber, int _maximumIterationNumber, double _F, double _Cr,
-			double _okUzunluguBaslangici, double _okUzunluguBitisi, double[] _L, double[] _H, AntennaArray _aA,
-			AntennaArray _aAForP, Mask _mask, boolean _amplitudeIsUsed, boolean _phaseIsUsed, boolean _positionIsUsed) {
+	public ShrinkingRegion(int _numberofElements, int _populationNumber, int _maximumIterationNumber, double _F,
+			double _Cr, double _okUzunluguBaslangici, double _okUzunluguBitisi, double[] _L, double[] _H,
+			AntennaArray _aA, AntennaArray _aAForP, Mask _mask, boolean _amplitudeIsUsed, boolean _phaseIsUsed,
+			boolean _positionIsUsed) {
 
 		numberofElements = _numberofElements;
 		populationNumber = _populationNumber;
+		halfOfPopulation = populationNumber / 2;
 		maximumIterationNumber = _maximumIterationNumber;
 		okUzunluguBaslangici = _okUzunluguBaslangici;
 		okUzunluguBitisi = _okUzunluguBitisi;
@@ -64,6 +69,8 @@ public class ShrinkingRegion {
 	private void createArrays() {
 		members = new double[problemDimension][populationNumber];
 		memberFitness = new double[populationNumber];
+		siraliMembers = new double[problemDimension][halfOfPopulation];
+		siraliMemberFitness = new double[halfOfPopulation];
 		temp = new double[problemDimension];
 		Ls = new double[problemDimension];
 		Hs = new double[problemDimension];
@@ -99,86 +106,58 @@ public class ShrinkingRegion {
 			}
 		}
 
-		for (int m = 0; m < populationNumber; m += 2) {
+		ilkDagitimiYap();
 
-			ilkDagitimiYap(m);
-
+		for (int m = 0; m < populationNumber; m++) {
+			System.out.println(memberFitness[m]);
 		}
+		System.out.println();
+		
+		iyileriListele();
+		
+		for (int m = 0; m < halfOfPopulation; m++) {
+			System.out.println(siraliMemberFitness[m]);
+		}
+
 	}
 
-	private void ilkDagitimiYap(int m) {
+	private void ilkDagitimiYap() {
 
-		// Okun kuyrugu
-		okunKuyrugunuBelirle(m);
-
-		// Okun ucu
-		okunUcunuBelirle(m);
-
-		// Ok ne tarafa dogru?
-		okunYonunuDuzelt(m);
-
-		istikamet[m / 2] = true;
-		rasgeleYonSayaci[m / 2] = 0;
-	}
-
-	private void okunKuyrugunuBelirle(int m) {
-		for (int d = 0; d < problemDimension; d++) {
-			members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
-			temp[d] = members[d][m];
-		}
-
-		memberFitness[m] = cost.function(temp);
-		if (memberFitness[m] < fitnessOfBestMember || bestMemberID == -1) {
-			bestMemberID = m;
-			fitnessOfBestMember = memberFitness[m];
-		}
-	}
-
-	private void okunUcunuBelirle(int m) {
-		double hipotenus = 0;
-		for (int d = 0; d < problemDimension; d++) {
-			birimVektor[d] = Math.random() * 2 - 1;
-			hipotenus += birimVektor[d] * birimVektor[d];
-		}
-		hipotenus = Math.sqrt(hipotenus);
-		for (int d = 0; d < problemDimension; d++) {
-			birimVektor[d] = birimVektor[d] / hipotenus;
-
-			// the distance between tip and tail
-			double carpan = iterasyonIndeksineOranla(okUzunluguBaslangici, okUzunluguBitisi, false);
-			//if(m==0 && d==0) System.out.println(carpan);
-			double okUzunlugu = carpan * (Hs[d] - Ls[d]);
-			bitisIcinDelta = okUzunlugu * birimVektor[d];
-
-			// if it exceeds the border, pull it into the safe area
-			double yeniKonum = members[d][m] + bitisIcinDelta;
-			if (yeniKonum > Hs[d] || yeniKonum < Ls[d]) {
-				yeniKonum = members[d][m] - bitisIcinDelta;
-			}
-			members[d][m + 1] = yeniKonum;
-			temp[d] = members[d][m + 1];
-		}
-
-		memberFitness[m + 1] = cost.function(temp);
-		if (memberFitness[m + 1] < fitnessOfBestMember || bestMemberID == -1) {
-			bestMemberID = m + 1;
-			fitnessOfBestMember = memberFitness[m + 1];
-		}
-	}
-
-	private void okunYonunuDuzelt(int m) {
-		if (memberFitness[m] < memberFitness[m + 1]) {
-			if (m == bestMemberID)
-				bestMemberID = m + 1;
-			double yedek; // genel
-			yedek = memberFitness[m];
-			memberFitness[m] = memberFitness[m + 1];
-			memberFitness[m + 1] = yedek;
-
+		for (int m = 0; m < populationNumber; m++) {
 			for (int d = 0; d < problemDimension; d++) {
-				yedek = members[d][m];
-				members[d][m] = members[d][m + 1];
-				members[d][m + 1] = yedek;
+				members[d][m] = Ls[d] + (Hs[d] - Ls[d]) * r.nextDouble();
+				temp[d] = members[d][m];
+			}
+
+			memberFitness[m] = cost.function(temp);
+			if (memberFitness[m] < fitnessOfBestMember || bestMemberID == -1) {
+				bestMemberID = m;
+				fitnessOfBestMember = memberFitness[m];
+			}
+		}
+
+//		for (int m = 0; m < halfOfPopulation; m++) {
+//			siraliMemberFitness[m] = -1;			
+//		}
+		
+		
+
+	}
+
+	private void iyileriListele() { // tabi ki yarisini
+		for (int mOrdered = 0; mOrdered < halfOfPopulation; mOrdered++) {
+			double currentBestInPool = -1;
+			for (int m = 0; m < populationNumber; m++) {
+				if (memberFitness[m] != -1) {
+					if (memberFitness[m] < currentBestInPool || currentBestInPool == -1) {
+						siraliMemberFitness[mOrdered] = memberFitness[m];
+						currentBestInPool = memberFitness[m];
+						for (int d = 0; d < problemDimension; d++) {							
+							siraliMembers[d][mOrdered] = members[d][m];
+						}
+						memberFitness[m] = -1;
+					}					
+				}
 			}
 		}
 	}
@@ -187,68 +166,6 @@ public class ShrinkingRegion {
 
 		// Buraya iteratif algoritmayi yazacaksin.
 		// _______________________________________
-		for (int m = 0; m < populationNumber; m += 2) {
-			if (istikamet[m / 2] == true) {
-				for (int d = 0; d < problemDimension; d++) {
-					temp[d] = members[d][m + 1] + (members[d][m + 1] - members[d][m]);
-					if (temp[d] > Hs[d] || temp[d] < Ls[d]) {
-						temp[d] = members[d][m + 1] - (members[d][m + 1] - members[d][m]);
-					}
-				}
-
-				double testMaliyet = cost.function(temp);
-				if (testMaliyet < memberFitness[m + 1]) // yeni konumun degeri daha iyi ise
-				{
-					double yedek; // genel
-					yedek = memberFitness[m + 1];
-					memberFitness[m + 1] = testMaliyet;
-					memberFitness[m] = yedek;
-
-					for (int d = 0; d < problemDimension; d++) {
-						yedek = members[d][m + 1];
-						members[d][m + 1] = temp[d];
-						members[d][m] = yedek;
-					}
-
-					if (memberFitness[m + 1] < fitnessOfBestMember) {
-						bestMemberID = m + 1;
-						fitnessOfBestMember = memberFitness[m + 1];
-					}
-				} else // yeni konumun degeri daha iyi DEGIL ise
-				{
-					memberFitness[m] = memberFitness[m + 1];
-					for (int d = 0; d < problemDimension; d++) {
-						members[d][m] = members[d][m + 1];
-					}
-
-					if (m + 1 == bestMemberID) {
-						bestMemberID = m;
-					}
-
-					istikamet[m / 2] = false;
-				}
-			} else {
-				int tahammulSiniri = 300;
-				if(rasgeleYonSayaci[m/2] > tahammulSiniri)
-				{
-					//okunKuyrugunuBelirle(m);
-					for (int d = 0; d < problemDimension; d++) {
-						members[d][m] = members[d][bestMemberID];
-					}
-					memberFitness[m] = fitnessOfBestMember;
-					rasgeleYonSayaci[m/2] = 0;
-				}
-
-				// Okun ucu
-				okunUcunuBelirle(m);
-
-				// Ok ne tarafa dogru?
-				okunYonunuDuzelt(m);
-
-				istikamet[m / 2] = true;
-				rasgeleYonSayaci[m / 2]++;
-			}
-		}
 
 		// _______________________________________
 
@@ -259,21 +176,6 @@ public class ShrinkingRegion {
 			iterationState = false;
 
 		return iterationState;
-	}
-
-	private double iterasyonIndeksineOranla(double baslangic, double bitis, boolean artarak_mi) {
-		double giden;
-
-		if (artarak_mi == true)
-			giden = baslangic + (bitis - baslangic) * ((double) (iterationIndex + 1) / maximumIterationNumber);
-		else
-			giden = baslangic - (baslangic - bitis) * ((double) (iterationIndex + 1) / maximumIterationNumber);
-		
-//		double f = (-(iterationIndex+1)+1000)*(0.9/1000);
-//		double g = Math.cos(((double)iterationIndex)/20);
-//		giden = Math.abs(f*g)+0.0001;
-		
-		return giden;
 	}
 
 }

@@ -2828,7 +2828,7 @@ public class UserInterface extends JFrame implements ChartMouseListener {
 				// Set the best results as the current value to the current antenna array
 				setBestResultsToCurrentAntennaArray();
 
-				System.out.println(bestValues.bestCostValue);
+				//System.out.println(bestValues.bestCostValue);
 				kacKerre--;
 				// System.out.println("kackerre:"+kacKerre);
 				if (kacKerre != 0)
